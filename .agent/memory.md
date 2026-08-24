@@ -14,11 +14,11 @@
 | **Repo** | https://github.com/parthasdey2304/vastavikComputers |
 | **Platforms** | Android (Kotlin + Compose, kotlin-app/) — Flutter (`lib/`) deprecated, Web (Next.js 15 future) |
 | **Backend** | **Dual:** Firebase (primary — Auth, Firestore, Storage, FCM, Functions Node 20) + Supabase (secondary — Postgres, pgvector, FTS, Realtime, Storage mirror) — synced via `supabaseSync` CF |
-| **AI model** | Gemini 3.7 Flash (`gemini-3.7-flash`, 1M context, released 2026-08-13, via Google AI Studio, key `AQ.Ab8...PQ` in local.properties → BuildConfig, Secret Manager) |
+| **AI model** | Mistral small-latest (chat + code exec + quiz gen + comment moderation) / Gemini 3.7 Flash (`gemini-3.7-flash`, 1M context, released 2026-08-13, via Google AI Studio, key `AQ.Ab8...PQ` in local.properties → BuildConfig, Secret Manager) |
 | **Payments** | UPI AutoPay via **PhonePe / Razorpay** (monthly mandate, 50% promotions, access revoked if not paid, 3-day grace) |
 | **UI source** | Google Stitch https://stitch.withgoogle.com/projects/17415965411885249153 + 21st.dev + v0.dev + DESIGN_IDEAS.md |
-| **Current version** | 0.2.0 (Agent Design — 21 features, dual backend) — see VERSION.md |
-| **Status** | Phase 0 DONE (0.1.0) + v0.2.0 Agent Design DONE 2026-08-22 — 24 docs in .agent/.agents, ready for M1 |
+| **Current version** | 0.3.0 (Neo-Brutalist + Editor + Quiz + Video — 22 screens themed, accent propagates, syntax highlighting) — see VERSION.md |
+| **Status** | v0.3.0 DONE 2026-08-24 — CodeEditor syntax highlight, Quiz download/review+AI, Video like/dislike/comments+AI moderation+zoom, neo-brutalist 6 colors + 0 radius (22 screens), 179 colors themed, chat avatar fix |
 
 ---
 

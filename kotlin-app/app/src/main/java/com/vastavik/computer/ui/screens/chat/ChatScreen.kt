@@ -1,7 +1,9 @@
 package com.vastavik.computer.ui.screens.chat
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -11,10 +13,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
@@ -24,44 +28,91 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.SpanStyle
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.google.ai.client.generativeai.GenerativeModel
+import kotlinx.coroutines.withContext
 import com.vastavik.computer.BuildConfig
+import org.json.JSONArray
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import android.net.Uri
 
 data class ChatMessage(val text: String, val isUser: Boolean)
+
+private const val SYSTEM_PROMPT = """You are Vastavik AI, a friendly programming tutor for Indian school students (Class 5-12, CBSE/ICSE boards). You help students learn Java, Python, JavaScript, and SQL.
+
+RULES:
+- Only answer questions about programming, computers, and coding (Java, Python, JavaScript, SQL, algorithms, data structures, web development, app development)
+- If asked about non-computer topics, politely say: "I can only help with programming and computer science questions!"
+- If asked inappropriate or harmful questions, say: "I can only help with programming and computer science questions!"
+- Keep answers CRISP and CLEAR — explain properly but don't over-explain
+- Use simple language suitable for a school student
+- Give code examples when helpful
+- For Class 5-8 students: use very simple explanations with real-life analogies
+- For Class 9-12 students: can include more technical depth
+- Always be encouraging and supportive
+- Format code with ```code blocks when showing examples"""
+
+private fun callMistralApi(messages: List<ChatMessage>): String {
+    val apiKey = BuildConfig.MISTRAL_API_KEY
+    if (apiKey.isBlank()) return "Mistral API key not configured. Please add MISTRAL_API_KEY to local.properties."
+
+    val url = URL("https://api.mistral.ai/v1/chat/completions")
+    val conn = url.openConnection() as HttpURLConnection
+    conn.requestMethod = "POST"
+    conn.setRequestProperty("Content-Type", "application/json")
+    conn.setRequestProperty("Authorization", "Bearer $apiKey")
+    conn.doOutput = true
+    conn.connectTimeout = 30000
+    conn.readTimeout = 30000
+
+    val apiMessages = JSONArray()
+    apiMessages.put(JSONObject().put("role", "system").put("content", SYSTEM_PROMPT))
+    for (msg in messages) {
+        apiMessages.put(JSONObject().put("role", if (msg.isUser) "user" else "assistant").put("content", msg.text))
+    }
+
+    val body = JSONObject().apply {
+        put("model", "mistral-small-latest")
+        put("messages", apiMessages)
+        put("max_tokens", 1024)
+        put("temperature", 0.3)
+    }
+
+    conn.outputStream.use { it.write(body.toString().toByteArray()) }
+
+    val responseCode = conn.responseCode
+    val stream = if (responseCode in 200..299) conn.inputStream else conn.errorStream
+    val response = stream.bufferedReader().use { it.readText() }
+
+    return if (responseCode in 200..299) {
+        val json = JSONObject(response)
+        json.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content")
+    } else {
+        "Error ($responseCode): ${JSONObject(response).optJSONObject("message")?.optString("message") ?: "Unknown error"}"
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(onNavigate: (String) -> Unit) {
-    var messages by remember {
-        mutableStateOf(
-            listOf(
-                ChatMessage("Hello! I am Vastavik AI powered by Gemini 3.7 Flash. Ask me Java/Python/JS/SQL for Class 5-12!", isUser = false)
-            )
-        )
-    }
+    val viewModel = remember { ChatViewModel.getInstance() }
+    val messages by viewModel.messages.collectAsState()
     var inputText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    val generativeModel = remember {
-        val key = BuildConfig.GEMINI_API_KEY
-        if (key.isNotBlank()) {
-            GenerativeModel(
-                modelName = "gemini-3.7-flash",
-                apiKey = key
-            )
-        } else null
-    }
-
-    suspend fun askGemini(prompt: String): String {
-        return try {
-            if (generativeModel == null) return "Gemini API key not configured. Add GEMINI_API_KEY to local.properties."
-            val response = generativeModel.generateContent(prompt)
-            response.text ?: "No response"
-        } catch (e: Exception) {
-            "Error: ${'$'}{e.message}. Check API key and internet."
+    suspend fun askMistral(prompt: String): String {
+        return withContext(Dispatchers.IO) {
+            try {
+                callMistralApi(messages + ChatMessage(prompt, isUser = true))
+            } catch (e: Exception) {
+                "Error: ${'$'}{e.message}. Check your internet connection."
+            }
         }
     }
 
@@ -69,13 +120,21 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
         TopAppBar(
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.SmartToy, contentDescription = null, tint = VastavikColors.LightPrimary)
+                    Icon(Icons.Filled.SmartToy, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(8.dp))
                     Text("Vastavik AI", fontWeight = FontWeight.Bold)
                     Spacer(Modifier.width(8.dp))
-                    Surface(shape = RoundedCornerShape(8.dp), color = VastavikColors.LightAccent.copy(alpha = 0.2f)) {
-                        Text("Gemini 3.7 Flash", modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = VastavikColors.LightAccent)
+                    Surface(shape = neoShape(8.dp), color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)) {
+                        Text("Mistral Small", modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
                     }
+                }
+            },
+            actions = {
+                IconButton(onClick = { viewModel.clearMessages() }) {
+                    Icon(Icons.Filled.Add, contentDescription = "New Chat", tint = MaterialTheme.colorScheme.primary)
+                }
+                IconButton(onClick = { onNavigate("profile") }) {
+                    Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.primary)
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -91,38 +150,37 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                     SuggestionChip(
                         onClick = {
                             if (!isLoading) {
-                                val userMsg = ChatMessage(prompt, isUser = true)
-                                messages = messages + userMsg
+                                viewModel.addMessage(ChatMessage(prompt, isUser = true))
                                 isLoading = true
                                 coroutineScope.launch {
-                                    listState.animateScrollToItem(messages.lastIndex)
-                                    val resp = askGemini(prompt)
-                                    messages = messages + ChatMessage(resp, isUser = false)
+                                    listState.animateScrollToItem(messages.lastIndex + 1)
+                                    val resp = askMistral(prompt)
+                                    viewModel.addMessage(ChatMessage(resp, isUser = false))
                                     isLoading = false
                                     listState.animateScrollToItem(messages.lastIndex)
                                 }
                             }
                         },
-                        label = { Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = VastavikColors.LightPrimary) },
-                        colors = SuggestionChipDefaults.suggestionChipColors(containerColor = VastavikColors.LightPrimary.copy(alpha = 0.1f)),
+                        label = { Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
+                        colors = SuggestionChipDefaults.suggestionChipColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                         border = null,
-                        shape = RoundedCornerShape(16.dp)
+                        shape = neoShape(16.dp)
                     )
                 }
             }
 
             LazyColumn(state = listState, modifier = Modifier.weight(1f).fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(messages) { message -> ChatBubbleRow(message) }
+                items(messages) { message -> ChatBubbleRow(message, onNavigate) }
                 if (isLoading) {
                     item {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                            Box(modifier = Modifier.size(32.dp).clip(CircleShape).background(VastavikColors.LightPrimary), contentAlignment = Alignment.Center) {
+                            Box(modifier = Modifier.size(32.dp).clip(neoCircleShape()).background(MaterialTheme.colorScheme.primary), contentAlignment = Alignment.Center) {
                                 Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
                             }
                             Spacer(Modifier.width(8.dp))
                             Surface(shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp), color = MaterialTheme.colorScheme.surface) {
                                 Row(modifier = Modifier.padding(16.dp)) {
-                                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = VastavikColors.LightPrimary)
+                                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.primary)
                                     Spacer(Modifier.width(8.dp))
                                     Text("Thinking...", color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
@@ -138,30 +196,29 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                         value = inputText, onValueChange = { inputText = it },
                         placeholder = { Text("Ask anything (Java/Python/JS/SQL)...") },
                         modifier = Modifier.weight(1f).heightIn(min = 48.dp, max = 120.dp),
-                        shape = RoundedCornerShape(24.dp), singleLine = false, maxLines = 5,
-                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = VastavikColors.LightPrimary, unfocusedBorderColor = MaterialTheme.colorScheme.outline)
+                        shape = neoShape(24.dp), singleLine = false, maxLines = 5,
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline)
                     )
                     Spacer(Modifier.width(8.dp))
                     FilledIconButton(
                         onClick = {
                             if (inputText.isNotBlank() && !isLoading) {
-                                val userMsg = ChatMessage(inputText.trim(), isUser = true)
                                 val userText = inputText.trim()
-                                messages = messages + userMsg
+                                viewModel.addMessage(ChatMessage(userText, isUser = true))
                                 inputText = ""
                                 isLoading = true
                                 coroutineScope.launch {
                                     try {
-                                        listState.animateScrollToItem(messages.lastIndex)
-                                        val resp = askGemini(userText)
-                                        messages = messages + ChatMessage(resp, isUser = false)
+                                        listState.animateScrollToItem(messages.lastIndex + 1)
+                                        val resp = askMistral(userText)
+                                        viewModel.addMessage(ChatMessage(resp, isUser = false))
                                         listState.animateScrollToItem(messages.lastIndex)
                                     } finally { isLoading = false }
                                 }
                             }
                         },
                         enabled = inputText.isNotBlank() && !isLoading,
-                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = VastavikColors.LightPrimary)
+                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) { Icon(Icons.Filled.Send, contentDescription = "Send", tint = Color.White) }
                 }
             }
@@ -170,53 +227,92 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
 }
 
 @Composable
-private fun ChatBubbleRow(message: ChatMessage) {
+private fun ChatBubbleRow(message: ChatMessage, onNavigate: (String) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start) {
         if (!message.isUser) {
-            Box(modifier = Modifier.size(32.dp).clip(CircleShape).background(VastavikColors.LightPrimary), contentAlignment = Alignment.Center) {
-                Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .shadow(4.dp, neoCircleShape())
+                    .clip(neoCircleShape())
+                    .background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
             }
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(10.dp))
         }
         Surface(
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = if (message.isUser) 16.dp else 4.dp, bottomEnd = if (message.isUser) 4.dp else 16.dp),
-            color = if (message.isUser) VastavikColors.LightPrimary else MaterialTheme.colorScheme.surface,
-            modifier = Modifier.fillMaxWidth(0.95f)
+            shape = if (MaterialTheme.shapes.medium.toString().contains("0.0")) RoundedCornerShape(0.dp) else RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = if (message.isUser) 16.dp else 4.dp, bottomEnd = if (message.isUser) 4.dp else 16.dp),
+            color = if (message.isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+            modifier = Modifier.widthIn(max = 300.dp)
         ) {
             if (message.isUser) {
                 Text(text = message.text, modifier = Modifier.padding(12.dp), color = Color.White, fontSize = 14.sp, lineHeight = 20.sp)
             } else {
-                ParsedMarkdownText(text = message.text, modifier = Modifier)
+                ParsedMarkdownText(text = message.text, modifier = Modifier, onNavigate = onNavigate)
             }
         }
         if (message.isUser) {
-            Spacer(Modifier.width(8.dp))
-            Box(modifier = Modifier.size(32.dp).clip(CircleShape).background(VastavikColors.LightAccent), contentAlignment = Alignment.Center) {
-                Icon(Icons.Filled.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(10.dp))
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .shadow(4.dp, neoCircleShape())
+                    .clip(neoCircleShape())
+                    .background(MaterialTheme.colorScheme.secondary),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Filled.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
             }
         }
     }
 }
 
 @Composable
-fun ParsedMarkdownText(text: String, modifier: Modifier = Modifier) {
+fun ParsedMarkdownText(text: String, modifier: Modifier = Modifier, onNavigate: ((String) -> Unit)? = null) {
     val parts = text.split("`")
-    androidx.compose.foundation.layout.Column(modifier = modifier) {
+    Column(modifier = modifier) {
         parts.forEachIndexed { index, part ->
             if (index % 2 == 1) {
                 val lines = part.trim().lines()
                 val language = lines.firstOrNull()?.trim() ?: ""
                 val codeLines = if (lines.size > 1) lines.drop(1) else listOf()
-                Surface(
-                    shape = RoundedCornerShape(8.dp), color = Color(0xFF1E1E1E),
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-                ) {
-                    androidx.compose.foundation.layout.Column(modifier = Modifier.padding(12.dp)) {
-                        if (language.isNotEmpty()) { Text(language, fontSize = 10.sp, color = Color.Gray); Spacer(Modifier.height(8.dp)) }
-                        androidx.compose.foundation.layout.Column(modifier = Modifier.fillMaxWidth()) {
+                val codeContent = codeLines.joinToString("\n")
+                if (onNavigate != null && codeContent.isNotBlank()) {
+                    Surface(
+                        onClick = {
+                            val encoded = Uri.encode(codeContent, "UTF-8")
+                            onNavigate("code_editor?initialCode=$encoded&language=$language")
+                        },
+                        shape = neoShape(12.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Filled.OpenInFull, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Column {
+                                Text("Open in Editor", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                if (language.isNotEmpty()) {
+                                    Text(language, color = Color.White.copy(alpha = 0.7f), fontSize = 11.sp)
+                                }
+                            }
+                        }
+                    }
+                } else if (codeContent.isNotBlank()) {
+                    Surface(
+                        shape = neoShape(8.dp), color = Color(0xFF1E1E1E),
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            if (language.isNotEmpty()) { Text(language, fontSize = 10.sp, color = Color.Gray); Spacer(Modifier.height(8.dp)) }
                             codeLines.forEachIndexed { i, line ->
-                                androidx.compose.foundation.layout.Row(modifier = Modifier.fillMaxWidth()) {
-                                    Text(text = "${i + 1}", color = Color(0xFF858585), fontFamily = FontFamily.Monospace, fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.End, modifier = Modifier.width(28.dp).padding(end = 8.dp))
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    Text(text = "${'$'}{i + 1}", color = Color(0xFF858585), fontFamily = FontFamily.Monospace, fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.End, modifier = Modifier.width(28.dp).padding(end = 8.dp))
                                     Text(text = highlightCode(if (line.isEmpty()) " " else line), color = Color(0xFFD4D4D4), fontFamily = FontFamily.Monospace, fontSize = 12.sp, modifier = Modifier.weight(1f))
                                 }
                             }
@@ -257,7 +353,7 @@ private fun parseBasicMarkdown(text: String) = buildAnnotatedString {
 }
 
 private fun parseInlineMarkdown(text: String, builder: androidx.compose.ui.text.AnnotatedString.Builder) {
-    val regex = Regex("\\*\\*(.*?)\\*\\*|+" + "(.*?)|\\*(.*?)\\*")
+    val regex = Regex("\\*\\*(.*?)\\*\\*|`(.*?)`|\\*(.*?)\\*")
     var currentIndex = 0
     val matches = regex.findAll(text)
     for (match in matches) {

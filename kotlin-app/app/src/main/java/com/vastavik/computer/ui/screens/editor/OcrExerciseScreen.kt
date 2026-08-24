@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +68,7 @@ fun OcrExerciseScreen(onNavigate: (String)->Unit) {
                 }, modifier=Modifier.fillMaxWidth()) { Icon(Icons.Filled.AutoFixHigh, contentDescription=null); Spacer(Modifier.width(8.dp)); Text("Ask Gemini to Review") }
                 if (aiResponse.isNotEmpty()) {
                     Spacer(Modifier.height(12.dp))
-                    Card(shape=RoundedCornerShape(12.dp), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)) {
+                    Card(shape=neoShape(12.dp), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)) {
                         Text(aiResponse, modifier=Modifier.padding(16.dp), fontSize=13.sp)
                     }
                 }
@@ -77,7 +79,7 @@ fun OcrExerciseScreen(onNavigate: (String)->Unit) {
                 }
                 Spacer(Modifier.height(12.dp))
                 if (imageUri!=null) {
-                    AsyncImage(model=imageUri, contentDescription=null, modifier=Modifier.fillMaxWidth().height(180.dp).background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)))
+                    AsyncImage(model=imageUri, contentDescription=null, modifier=Modifier.fillMaxWidth().height(180.dp).background(MaterialTheme.colorScheme.surfaceVariant, neoShape(12.dp)))
                     Spacer(Modifier.height(12.dp))
                 }
                 if (ocrText.isNotEmpty()) {
@@ -88,7 +90,7 @@ fun OcrExerciseScreen(onNavigate: (String)->Unit) {
                     Button(onClick={ aiResponse = "OCR + Gemini 3.7 Flash: Extracted lines. Suggestion: fix indentation and add main guard."}, modifier=Modifier.fillMaxWidth()) { Icon(Icons.Filled.AutoFixHigh, contentDescription=null); Spacer(Modifier.width(8.dp)); Text("Send to Gemini") }
                     if (aiResponse.isNotEmpty()) {
                         Spacer(Modifier.height(12.dp))
-                        Card(shape=RoundedCornerShape(12.dp)) { Text(aiResponse, modifier=Modifier.padding(16.dp), fontSize=13.sp) }
+                        Card(shape=neoShape(12.dp)) { Text(aiResponse, modifier=Modifier.padding(16.dp), fontSize=13.sp) }
                     }
                 } else {
                     Text("Take or pick a photo of handwritten/printed code. OCR (ML Kit) will extract, you edit, then Gemini 3.7 Flash explains.", color=MaterialTheme.colorScheme.onSurfaceVariant, fontSize=13.sp)

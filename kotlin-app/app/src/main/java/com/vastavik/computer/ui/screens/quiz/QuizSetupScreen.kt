@@ -1,6 +1,5 @@
 package com.vastavik.computer.ui.screens.quiz
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -13,6 +12,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,6 +26,9 @@ fun QuizSetupScreen(
 ) {
     var questionCount by remember { mutableIntStateOf(10) }
     var difficulty by remember { mutableStateOf("Medium") }
+    var isGenerating by remember { mutableStateOf(false) }
+    var errorMsg by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -45,43 +52,23 @@ fun QuizSetupScreen(
                 .padding(padding)
                 .padding(24.dp)
         ) {
-            // Topic
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = neoShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "Topic",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Text("Topic", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        topic,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
+                    Text(topic, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Number of questions
-            Text(
-                "Number of Questions",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Text("Number of Questions", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 listOf(10, 20, 30).forEach { count ->
                     FilterChip(
                         selected = questionCount == count,
@@ -94,18 +81,9 @@ fun QuizSetupScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Difficulty
-            Text(
-                "Difficulty",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Text("Difficulty", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 listOf("Easy", "Medium", "Hard").forEach { diff ->
                     FilterChip(
                         selected = difficulty == diff,
@@ -117,32 +95,51 @@ fun QuizSetupScreen(
                         modifier = Modifier.weight(1f),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = when (diff) {
-                                "Easy" -> VastavikColors.LightSuccess.copy(alpha = 0.1f)
+                                "Easy" -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
                                 "Medium" -> VastavikColors.LightWarning.copy(alpha = 0.1f)
-                                else -> VastavikColors.LightError.copy(alpha = 0.1f)
+                                else -> MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
                             }
                         )
                     )
                 }
             }
 
+            if (errorMsg.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(errorMsg, color = MaterialTheme.colorScheme.error, fontSize = 13.sp)
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
-            // Generate button
             Button(
-                onClick = { onNavigate("quiz_taking/quiz_1") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp)
+                onClick = {
+                    isGenerating = true
+                    errorMsg = ""
+                    coroutineScope.launch {
+                        val result = withContext(Dispatchers.IO) {
+                            QuizManager.generateQuiz(topic, questionCount, difficulty)
+                        }
+                        isGenerating = false
+                        if (result == "ok") {
+                            onNavigate("quiz_taking/quiz_1")
+                        } else {
+                            errorMsg = result
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = neoShape(16.dp),
+                enabled = !isGenerating
             ) {
-                Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "Generate Quiz",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                if (isGenerating) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Generating $questionCount questions...", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                } else {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Generate Quiz", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }

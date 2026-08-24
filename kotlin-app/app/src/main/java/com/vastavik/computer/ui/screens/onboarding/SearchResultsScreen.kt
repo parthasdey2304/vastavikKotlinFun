@@ -16,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +71,7 @@ fun SearchResultsScreen(onNavigate: (String) -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = neoShape(12.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Row(
@@ -81,7 +83,7 @@ fun SearchResultsScreen(onNavigate: (String) -> Unit) {
                         Icon(
                             if (type == "Course") Icons.Filled.School else Icons.Filled.Lightbulb,
                             contentDescription = null,
-                            tint = VastavikColors.LightPrimary
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {

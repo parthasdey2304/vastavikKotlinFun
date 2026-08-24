@@ -74,6 +74,7 @@
 |---|---|---|---|
 | 2026-08-22 | Init | Architect (AI) | Created `.agent/` with 12 Markdown docs (PRD, ARCHITECTURE, Design, Rules, memory, PLAN, SECURITY, logs, DEPENDENCY_GRAPH, CHANGELOG, VERSION, README). Verified Gemini 3.7 Flash (`gemini-3.7-flash`, 2026-08-13, 1M context) and Stitch project link. Locked tech stack: Kotlin+Compose / Next.js 15 / Firebase / Gemini / UPI AutoPay. Defined 14 Firestore collections + full security rules. Synced docs to `D:\vastavikKotlinFun\.agent` workspace. Next: Phase 1 scaffolding. |
 
+| 2026-08-24 | v0.3.0 Editor+Quiz+Video+Neo | Muse Spark | Syntax highlighting (CodeEditor/Chat), chat avatar fix, quiz download/review with AI explanations, VideoLesson like/dislike + comments + AI moderation + whiteboard zoom, neo-brutalist 6 colors + 0 radius (neoShape 22 screens), 179 hardcoded colors -> MaterialTheme, LearningPath dark-mode fix, build green + installed on 8d63ff98. |
 | 2026-08-22 | v0.2.0 Agent Design | Architect (AI) | Expanded to 21-feature scope per rookie brief: updated PRD (21 features incl. editor full-screen line numbers, OCR ML Kit, promo pop text/image/video, 50% promotions, Notes images/PDF, PhonePe/Razorpay AutoPay), created TRD, UI_UX_DESIGN (+ NeoBrutalish), DESIGN_IDEAS, APP_FLOW (16 flows), BACKEND_SCHEMA (Firebase 14+2 + Supabase 7 tables + RLS + sync), IMPLEMENTATION_PLAN (M0..M8), TESTING_PLAN, GITHUB_WORKFLOW, BUGS (TD-01..TD-07), TEST_REPORT (M0 PASS). Dual backend spec locked, key AQ.Ab8...PQ into local.properties only. Synced to .agents + D:\vastavikKotlinFun workspace. |
 
 ---

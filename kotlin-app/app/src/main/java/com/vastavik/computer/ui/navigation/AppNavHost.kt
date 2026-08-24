@@ -33,6 +33,7 @@ import com.vastavik.computer.ui.screens.profile.ProfileScreen
 import com.vastavik.computer.ui.screens.quiz.QuizSetupScreen
 import com.vastavik.computer.ui.screens.quiz.QuizTakingScreen
 import com.vastavik.computer.ui.screens.video.VideoLessonScreen
+import java.net.URLDecoder
 
 @Composable
 fun AppNavHost(
@@ -168,6 +169,22 @@ fun AppNavHost(
         }
         composable("search") {
             SearchResultsScreen(onNavigate = { route -> navController.navigate(route) })
+        }
+        composable(
+            route = "code_editor?initialCode={initialCode}&language={language}",
+            arguments = listOf(
+                navArgument("initialCode") { type = NavType.StringType; defaultValue = "" },
+                navArgument("language") { type = NavType.StringType; defaultValue = "Python" }
+            )
+        ) { backStackEntry ->
+            val rawCode = backStackEntry.arguments?.getString("initialCode") ?: ""
+            val initialCode = try { URLDecoder.decode(rawCode, "UTF-8") } catch (_: Exception) { rawCode }
+            val language = backStackEntry.arguments?.getString("language") ?: "Python"
+            CodeEditorScreen(
+                onNavigate = { route -> navController.navigate(route) },
+                initialCode = initialCode,
+                initialLanguage = language
+            )
         }
         composable("code_editor") {
             CodeEditorScreen(onNavigate = { route -> navController.navigate(route) })

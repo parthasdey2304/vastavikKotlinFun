@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,7 +138,7 @@ fun PYQScreen(onNavigate: (String) -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = neoShape(12.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Row(
@@ -148,14 +150,14 @@ fun PYQScreen(onNavigate: (String) -> Unit) {
                             Box(
                                 modifier = Modifier
                                     .size(48.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(VastavikColors.LightPrimary.copy(alpha = 0.1f)),
+                                    .clip(neoShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     Icons.Filled.Article,
                                     contentDescription = null,
-                                    tint = VastavikColors.LightPrimary
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                             }
                             Spacer(modifier = Modifier.width(16.dp))

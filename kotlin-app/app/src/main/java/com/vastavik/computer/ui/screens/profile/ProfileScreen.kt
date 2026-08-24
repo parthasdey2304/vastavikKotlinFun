@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +47,7 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = neoShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Column(
@@ -57,8 +59,8 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                         Box(
                             modifier = Modifier
                                 .size(80.dp)
-                                .clip(CircleShape)
-                                .background(VastavikColors.LightPrimary),
+                                .clip(neoCircleShape())
+                                .background(MaterialTheme.colorScheme.primary),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -112,14 +114,14 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onNavigate("payment") },
-                    shape = RoundedCornerShape(16.dp)
+                    shape = neoShape(16.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(
                                 Brush.linearGradient(
-                                    colors = listOf(VastavikColors.LightPrimary, Color(0xFF6366F1))
+                                    colors = listOf(MaterialTheme.colorScheme.primary, Color(0xFF6366F1))
                                 )
                             )
                             .padding(20.dp)
@@ -176,7 +178,7 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onNavigate(route) },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = neoShape(12.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                 ) {
                     Row(
@@ -188,14 +190,14 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                         Icon(
                             icon,
                             contentDescription = null,
-                            tint = if (title == "Log Out") VastavikColors.LightError else VastavikColors.LightPrimary
+                            tint = if (title == "Log Out") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
                             title,
                             modifier = Modifier.weight(1f),
                             fontWeight = FontWeight.W500,
-                            color = if (title == "Log Out") VastavikColors.LightError else MaterialTheme.colorScheme.onBackground
+                            color = if (title == "Log Out") MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground
                         )
                         Icon(
                             Icons.Filled.ChevronRight,
@@ -218,7 +220,7 @@ private fun StatCard(
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
+        shape = neoShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
@@ -230,7 +232,7 @@ private fun StatCard(
             Icon(
                 icon,
                 contentDescription = null,
-                tint = VastavikColors.LightPrimary,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(28.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))

@@ -97,7 +97,7 @@ fun SignupScreen(
                 imageVector = Icons.Filled.LaptopChromebook,
                 contentDescription = null,
                 modifier = Modifier.size(80.dp),
-                tint = VastavikColors.LightPrimary
+                tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(24.dp))
 

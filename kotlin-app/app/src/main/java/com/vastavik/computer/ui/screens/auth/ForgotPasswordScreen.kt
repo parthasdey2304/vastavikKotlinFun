@@ -51,7 +51,7 @@ fun ForgotPasswordScreen(
                 imageVector = Icons.Filled.LockReset,
                 contentDescription = null,
                 modifier = Modifier.size(80.dp),
-                tint = VastavikColors.LightPrimary
+                tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -104,13 +104,13 @@ fun ForgotPasswordScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = VastavikColors.LightSuccessContainer
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
                     )
                 ) {
                     Text(
                         text = "Password reset link has been sent to your email.",
                         modifier = Modifier.padding(16.dp),
-                        color = VastavikColors.LightSuccess
+                        color = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }

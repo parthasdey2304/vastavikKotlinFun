@@ -17,6 +17,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,14 +54,14 @@ fun PaymentScreen(onNavigate: (String) -> Unit) {
             // Premium header
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp)
+                shape = neoShape(16.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
                             Brush.linearGradient(
-                                colors = listOf(VastavikColors.LightPrimary, Color(0xFF6366F1))
+                                colors = listOf(MaterialTheme.colorScheme.primary, Color(0xFF6366F1))
                             )
                         )
                         .padding(24.dp),
@@ -91,27 +93,27 @@ fun PaymentScreen(onNavigate: (String) -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             // Gateway toggle PhonePe / Razorpay
-            Text("Payment Gateway", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = VastavikColors.LightPrimary, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp))
+            Text("Payment Gateway", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 listOf("Razorpay","PhonePe").forEach { g ->
                     val sel = gateway == g
                     Card(
                         modifier = Modifier.weight(1f).clickable{ gateway = g },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = if(sel) VastavikColors.LightPrimary.copy(alpha=0.12f) else MaterialTheme.colorScheme.surface),
+                        shape = neoShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = if(sel) MaterialTheme.colorScheme.primary.copy(alpha=0.12f) else MaterialTheme.colorScheme.surface),
                         border = if(sel) CardDefaults.outlinedCardBorder().copy(width=2.dp) else null
-                    ) { Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment=Alignment.Center){ Text(g, fontWeight=FontWeight.Bold, color= if(sel) VastavikColors.LightPrimary else MaterialTheme.colorScheme.onSurface) } }
+                    ) { Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment=Alignment.Center){ Text(g, fontWeight=FontWeight.Bold, color= if(sel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface) } }
                 }
             }
             Spacer(Modifier.height(16.dp))
             if (promoActive) {
-                Card(shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = VastavikColors.LightSuccessContainer), modifier=Modifier.fillMaxWidth()) {
+                Card(shape = neoShape(12.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer), modifier=Modifier.fillMaxWidth()) {
                     Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment=Alignment.CenterVertically){
-                        Icon(Icons.Filled.LocalOffer, contentDescription=null, tint=VastavikColors.LightSuccess)
+                        Icon(Icons.Filled.LocalOffer, contentDescription=null, tint=MaterialTheme.colorScheme.tertiary)
                         Spacer(Modifier.width(8.dp))
-                        Text("50% OFF applied!", fontWeight=FontWeight.Bold, color=VastavikColors.LightSuccess)
+                        Text("50% OFF applied!", fontWeight=FontWeight.Bold, color=MaterialTheme.colorScheme.tertiary)
                         Spacer(Modifier.weight(1f))
-                        Text("Diwali Sale", fontSize=11.sp, color=VastavikColors.LightSuccess)
+                        Text("Diwali Sale", fontSize=11.sp, color=MaterialTheme.colorScheme.tertiary)
                     }
                 }
                 Spacer(Modifier.height(12.dp))
@@ -142,7 +144,7 @@ fun PaymentScreen(onNavigate: (String) -> Unit) {
             // Features
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = neoShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -167,7 +169,7 @@ fun PaymentScreen(onNavigate: (String) -> Unit) {
                             Icon(
                                 Icons.Filled.CheckCircle,
                                 contentDescription = null,
-                                tint = VastavikColors.LightSuccess,
+                                tint = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
@@ -184,7 +186,7 @@ fun PaymentScreen(onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(16.dp)
+                shape = neoShape(16.dp)
             ) {
                 Text(
                     if(promoActive) "Pay with ${gateway} - UPI AutoPay (50% OFF)" else "Subscribe with ${gateway} - UPI AutoPay",
@@ -212,9 +214,9 @@ private fun PlanCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = neoShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) VastavikColors.LightPrimary.copy(alpha = 0.1f)
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
             else MaterialTheme.colorScheme.surface
         ),
         border = CardDefaults.outlinedCardBorder().takeIf { isSelected }
@@ -228,7 +230,7 @@ private fun PlanCard(
             RadioButton(
                 selected = isSelected,
                 onClick = onClick,
-                colors = RadioButtonDefaults.colors(selectedColor = VastavikColors.LightPrimary)
+                colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -244,8 +246,8 @@ private fun PlanCard(
             if (badge != null) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = VastavikColors.LightSuccess
+                    shape = neoShape(8.dp),
+                    color = MaterialTheme.colorScheme.tertiary
                 ) {
                     Text(
                         badge,

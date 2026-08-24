@@ -19,6 +19,23 @@
 
 ---
 
+## [0.3.0] — 2026-08-24 — Neo-Brutalist + Editor + Quiz + Video
+
+### Added
+
+- **Syntax highlighting** in CodeEditorScreen + Chat code blocks (Java/Python/JS/SQL keywords, strings, numbers, comments) via highlightCode().
+- **Quiz completion** — Back to Home + Download Questions (share) + Review Answers with AI explanation (Mistral per-question 2-3 sentences).
+- **VideoLessonScreen** — Like/Dislike buttons + YouTube Shorts-style comments bottom sheet + AI moderation (Mistral, blocks spam/trolling).
+- **Whiteboard zoom** — pinch-to-zoom (0.5x–5x) with transformable + graphicsLayer.
+- **Neo-Brutalist theme** — 6 accent colors (Yellow/Pink/Blue/Lime/Orange/Purple), 0 border radius when enabled, thick black borders, hard shadows; light/dark mode both supported.
+- **NeoShapes helpers** — neoShape() / neoCircleShape() applied to 22 screens so every Card/Surface/Icon has 0 radius when neo on, circle/rounded when off.
+- **Theme fixes** — Replaced 179 hardcoded VastavikColors with MaterialTheme.colorScheme so accent color propagates app-wide; fixed LearningPathScreen dark-mode visibility.
+
+### Fixed
+
+- Chat avatar rectangle clipping (bubble fillMaxWidth 0.95 -> widthIn max 300dp).
+- LearningPathScreen Canvas DrawScope crash (extracted pathColor before Canvas).
+
 ## [0.1.0] â€” 2026-08-22 â€” Init
 
 ### Added

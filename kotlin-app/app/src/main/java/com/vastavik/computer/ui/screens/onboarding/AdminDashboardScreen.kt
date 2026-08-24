@@ -46,7 +46,7 @@ fun AdminDashboardScreen(onNavigate: (String) -> Unit) {
                 Icons.Filled.AdminPanelSettings,
                 contentDescription = null,
                 modifier = Modifier.size(80.dp),
-                tint = VastavikColors.LightPrimary.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(

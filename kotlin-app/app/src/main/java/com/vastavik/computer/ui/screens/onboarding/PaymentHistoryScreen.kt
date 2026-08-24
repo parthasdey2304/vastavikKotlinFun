@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +75,7 @@ fun PaymentHistoryScreen(onNavigate: (String) -> Unit) {
                 items(transactions) { (plan, amount, status) ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = neoShape(12.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Row(
@@ -85,20 +87,20 @@ fun PaymentHistoryScreen(onNavigate: (String) -> Unit) {
                             Box(
                                 modifier = Modifier
                                     .size(48.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(VastavikColors.LightSuccess.copy(alpha = 0.1f)),
+                                    .clip(neoShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     Icons.Filled.CheckCircle,
                                     contentDescription = null,
-                                    tint = VastavikColors.LightSuccess
+                                    tint = MaterialTheme.colorScheme.tertiary
                                 )
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(plan, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
-                                Text(status, fontSize = 13.sp, color = VastavikColors.LightSuccess)
+                                Text(status, fontSize = 13.sp, color = MaterialTheme.colorScheme.tertiary)
                             }
                             Text(amount, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                         }

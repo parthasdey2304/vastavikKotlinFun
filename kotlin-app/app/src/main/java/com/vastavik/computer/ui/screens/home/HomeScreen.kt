@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,19 +27,24 @@ import com.vastavik.computer.ui.screens.chat.ChatScreen
 import com.vastavik.computer.ui.screens.learning.LearningPathScreen
 import com.vastavik.computer.ui.screens.practice.PracticeScreen
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 import com.vastavik.computer.ui.components.PromoPopup
 import com.vastavik.computer.ui.components.PromoData
+
+private var promoShown = false
 
 @Composable
 fun HomeScreen(onNavigate: (String) -> Unit) {
     var selectedIndex by remember { mutableIntStateOf(0) }
     var searchQuery by remember { mutableStateOf("") }
-    var showPromo by remember { mutableStateOf(true) }
+    var showPromo by remember { mutableStateOf(!promoShown) }
 
     val sampleCourses = listOf("Java Programming", "Python Basics", "Data Structures", "Web Development")
     val sampleTopics = listOf("OOP Concepts", "Arrays & Lists", "Sorting Algorithms", "File Handling")
 
     if (showPromo) {
+        promoShown = true
         PromoPopup(
             promo = PromoData(title="50% OFF Premium!", body="Get full access to Java/Python/JS/SQL + AI Chat & papers. UPI AutoPay Rs 149/mo.", ctaText="Grab Now"),
             onDismiss = { showPromo = false },
@@ -94,7 +100,7 @@ private fun HomeTab(
                     .fillMaxWidth()
                     .background(
                         color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                        shape = if (MaterialTheme.shapes.medium.toString().contains("0.0")) RoundedCornerShape(0.dp) else RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
                     )
                     .padding(horizontal = 20.dp, vertical = 24.dp)
             ) {
@@ -123,15 +129,15 @@ private fun HomeTab(
                             )
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = { onNavigate("notifications") }, modifier = Modifier.size(48.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceVariant)) {
-                                Icon(Icons.Filled.Notifications, contentDescription = "Notifications", tint = VastavikColors.LightPrimary)
+                            IconButton(onClick = { onNavigate("notifications") }, modifier = Modifier.size(48.dp).clip(neoCircleShape()).background(MaterialTheme.colorScheme.surfaceVariant)) {
+                                Icon(Icons.Filled.Notifications, contentDescription = "Notifications", tint = MaterialTheme.colorScheme.primary)
                             }
                             Spacer(Modifier.width(8.dp))
                             Box(
                                 modifier = Modifier
                                     .size(48.dp)
-                                    .clip(CircleShape)
-                                    .background(VastavikColors.LightPrimary)
+                                    .clip(neoCircleShape())
+                                    .background(MaterialTheme.colorScheme.primary)
                                     .clickable { onNavigate("profile") },
                                 contentAlignment = Alignment.Center
                             ) {
@@ -146,7 +152,7 @@ private fun HomeTab(
                         placeholder = { Text("Search courses, topics...") },
                         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = neoShape(16.dp),
                         singleLine = true
                     )
                 }
@@ -223,7 +229,7 @@ private fun SectionTitle(title: String, action: String) {
                 text = action,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W600,
-                color = VastavikColors.LightPrimary,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 12.dp)
             )
         }
@@ -237,7 +243,7 @@ private fun ContinueLearningCard(onNavigate: (String) -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .clickable { onNavigate("video_lesson/1/1/1/1") },
-        shape = RoundedCornerShape(24.dp),
+        shape = neoShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
@@ -245,7 +251,7 @@ private fun ContinueLearningCard(onNavigate: (String) -> Unit) {
                 .fillMaxWidth()
                 .background(
                     Brush.linearGradient(
-                        colors = listOf(VastavikColors.LightPrimary, Color(0xFF6366F1))
+                        colors = listOf(MaterialTheme.colorScheme.primary, Color(0xFF6366F1))
                     )
                 )
                 .padding(20.dp)
@@ -255,7 +261,7 @@ private fun ContinueLearningCard(onNavigate: (String) -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(neoShape(12.dp))
                             .background(Color.White.copy(alpha = 0.2f)),
                         contentAlignment = Alignment.Center
                     ) {
@@ -289,21 +295,21 @@ private fun ContinueLearningCard(onNavigate: (String) -> Unit) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(6.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            color = VastavikColors.LightAccent,
+                                .clip(neoShape(4.dp)),
+                            color = MaterialTheme.colorScheme.secondary,
                             trackColor = Color.White.copy(alpha = 0.24f)
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Surface(
                         onClick = { onNavigate("video_lesson/1/1/1/1") },
-                        shape = RoundedCornerShape(20.dp),
+                        shape = neoShape(20.dp),
                         color = Color.White
                     ) {
                         Text(
                             text = "Continue",
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            color = VastavikColors.LightPrimary,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -320,7 +326,7 @@ private fun PromoBanner(color: Long, title: String, subtitle: String, onClick: (
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(24.dp),
+        shape = neoShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color(color))
     ) {
         Column(modifier = Modifier.padding(22.dp)) {
@@ -348,7 +354,7 @@ private fun PyqEntryCard(onNavigate: (String) -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .clickable { onNavigate("pyq") },
-        shape = RoundedCornerShape(16.dp),
+        shape = neoShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = CardDefaults.outlinedCardBorder()
     ) {
@@ -360,7 +366,7 @@ private fun PyqEntryCard(onNavigate: (String) -> Unit) {
                 Icons.Filled.Article,
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
-                tint = VastavikColors.LightPrimary
+                tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -406,7 +412,7 @@ private fun CourseCard(title: String, onClick: () -> Unit) {
             .width(120.dp)
             .height(150.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
+        shape = neoShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
@@ -417,15 +423,15 @@ private fun CourseCard(title: String, onClick: () -> Unit) {
             Box(
                 modifier = Modifier
                     .size(52.dp)
-                    .clip(CircleShape)
-                    .background(VastavikColors.LightPrimary.copy(alpha = 0.1f)),
+                    .clip(neoCircleShape())
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Filled.Code,
                     contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = VastavikColors.LightPrimary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
@@ -448,7 +454,7 @@ private fun PopularTopicItem(title: String, subject: String, duration: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
-        shape = RoundedCornerShape(16.dp),
+        shape = neoShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
@@ -458,14 +464,14 @@ private fun PopularTopicItem(title: String, subject: String, duration: String) {
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(neoShape(12.dp))
                     .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Filled.PlayArrow,
                     contentDescription = null,
-                    tint = VastavikColors.LightPrimary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -515,8 +521,8 @@ private fun BottomNavBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
                 val isSelected = selectedIndex == index
                 Surface(
                     onClick = { onItemSelected(index) },
-                    shape = RoundedCornerShape(20.dp),
-                    color = if (isSelected) VastavikColors.LightPrimary.copy(alpha = 0.1f) else Color.Transparent,
+                    shape = neoShape(20.dp),
+                    color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else Color.Transparent,
                     modifier = Modifier.padding(horizontal = 4.dp)
                 ) {
                     Row(
@@ -526,14 +532,14 @@ private fun BottomNavBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
                         Icon(
                             icon,
                             contentDescription = label,
-                            tint = if (isSelected) VastavikColors.LightPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(24.dp)
                         )
                         if (isSelected) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 label,
-                                color = VastavikColors.LightPrimary,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
                         }

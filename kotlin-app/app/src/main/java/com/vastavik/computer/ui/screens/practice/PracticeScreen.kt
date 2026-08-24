@@ -18,6 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +31,11 @@ fun PracticeScreen(onNavigate: (String) -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text("Practice") },
+                actions = {
+                    IconButton(onClick = { onNavigate("profile") }) {
+                        Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.primary)
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )
@@ -40,12 +47,12 @@ fun PracticeScreen(onNavigate: (String) -> Unit) {
             TabRow(
                 selectedTabIndex = selectedTab,
                 containerColor = MaterialTheme.colorScheme.background,
-                contentColor = VastavikColors.LightPrimary,
+                contentColor = MaterialTheme.colorScheme.primary,
                 indicator = { tabPositions ->
                     if (selectedTab < tabPositions.size) {
                         TabRowDefaults.SecondaryIndicator(
                             modifier = Modifier.padding(start = tabPositions[selectedTab].left),
-                            color = VastavikColors.LightPrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -99,7 +106,7 @@ private fun MCQTab(onNavigate: (String) -> Unit) {
                         selectedTopic = title
                         showConfigSheet = true 
                     },
-                shape = RoundedCornerShape(16.dp),
+                shape = neoShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Row(
@@ -109,14 +116,14 @@ private fun MCQTab(onNavigate: (String) -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(VastavikColors.LightPrimary.copy(alpha = 0.1f)),
+                            .clip(neoShape(12.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Filled.Quiz,
                             contentDescription = null,
-                            tint = VastavikColors.LightPrimary
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
@@ -169,12 +176,12 @@ private fun MCQTab(onNavigate: (String) -> Unit) {
                         Surface(
                             onClick = {
                                 showConfigSheet = false
-                                onNavigate("quiz_setup/$selectedTopic/$count")
+                                onNavigate("quiz_setup/$selectedTopic")
                             },
                             modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(12.dp),
-                            color = VastavikColors.LightPrimary.copy(alpha = 0.1f),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, VastavikColors.LightPrimary)
+                            shape = neoShape(12.dp),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                         ) {
                             Box(
                                 modifier = Modifier.padding(vertical = 16.dp),
@@ -184,7 +191,7 @@ private fun MCQTab(onNavigate: (String) -> Unit) {
                                     text = "$count",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 20.sp,
-                                    color = VastavikColors.LightPrimary
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         }
@@ -212,7 +219,7 @@ private fun CodingTab(onNavigate: (String) -> Unit) {
         items(challenges) { (title, difficulty, topic) ->
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = neoShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -223,11 +230,11 @@ private fun CodingTab(onNavigate: (String) -> Unit) {
                     ) {
                         Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = neoShape(8.dp),
                             color = when (difficulty) {
-                                "Easy" -> VastavikColors.LightSuccess.copy(alpha = 0.1f)
+                                "Easy" -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
                                 "Medium" -> VastavikColors.LightWarning.copy(alpha = 0.1f)
-                                else -> VastavikColors.LightError.copy(alpha = 0.1f)
+                                else -> MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
                             }
                         ) {
                             Text(
@@ -235,9 +242,9 @@ private fun CodingTab(onNavigate: (String) -> Unit) {
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 fontSize = 12.sp,
                                 color = when (difficulty) {
-                                    "Easy" -> VastavikColors.LightSuccess
+                                    "Easy" -> MaterialTheme.colorScheme.tertiary
                                     "Medium" -> VastavikColors.LightWarning
-                                    else -> VastavikColors.LightError
+                                    else -> MaterialTheme.colorScheme.error
                                 }
                             )
                         }
@@ -268,7 +275,7 @@ private fun PYQTab(onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onNavigate("pyq") },
-                shape = RoundedCornerShape(16.dp),
+                shape = neoShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Row(
@@ -278,14 +285,14 @@ private fun PYQTab(onNavigate: (String) -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(VastavikColors.LightAccent.copy(alpha = 0.1f)),
+                            .clip(neoShape(12.dp))
+                            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Filled.Article,
                             contentDescription = null,
-                            tint = VastavikColors.LightAccent
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     Spacer(modifier = Modifier.width(16.dp))

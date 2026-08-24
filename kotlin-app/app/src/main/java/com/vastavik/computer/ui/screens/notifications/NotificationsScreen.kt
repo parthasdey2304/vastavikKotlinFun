@@ -1,4 +1,4 @@
-﻿package com.vastavik.computer.ui.screens.notifications
+package com.vastavik.computer.ui.screens.notifications
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,6 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 data class AppNotification(val id:String, val title:String, val body:String, val time:String, val unread:Boolean=true, val type:String="general")
 
@@ -44,17 +46,17 @@ fun NotificationsScreen(onNavigate:(String)->Unit){
                 items(items){ n ->
                     Card(
                         onClick = { items = items.map{ if(it.id==n.id) it.copy(unread=false) else it }; when(n.type){ "promo"-> onNavigate("payment"); "update"-> onNavigate("app_update"); "new_lesson"-> onNavigate("video_lesson/1/1/1/1"); else->{}} },
-                        shape=RoundedCornerShape(16.dp),
+                        shape=neoShape(16.dp),
                         colors=CardDefaults.cardColors(containerColor = if(n.unread) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant.copy(alpha=0.5f)),
                         border = if(n.unread) CardDefaults.outlinedCardBorder().copy(width=1.dp) else null
                     ){
                         Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment=Alignment.Top){
-                            Box(Modifier.size(40.dp).clip(CircleShape).background(if(n.unread) VastavikColors.LightPrimary else MaterialTheme.colorScheme.outline), contentAlignment=Alignment.Center){ Icon(Icons.Filled.Notifications, contentDescription=null, tint=Color.White, modifier=Modifier.size(20.dp)) }
+                            Box(Modifier.size(40.dp).clip(neoCircleShape()).background(if(n.unread) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline), contentAlignment=Alignment.Center){ Icon(Icons.Filled.Notifications, contentDescription=null, tint=Color.White, modifier=Modifier.size(20.dp)) }
                             Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)){
                                 Row(verticalAlignment=Alignment.CenterVertically){
                                     Text(n.title, fontWeight=FontWeight.Bold, fontSize=14.sp, modifier=Modifier.weight(1f), color=MaterialTheme.colorScheme.onSurface)
-                                    if(n.unread) Box(Modifier.size(8.dp).clip(CircleShape).background(VastavikColors.LightPrimary))
+                                    if(n.unread) Box(Modifier.size(8.dp).clip(neoCircleShape()).background(MaterialTheme.colorScheme.primary))
                                 }
                                 Spacer(Modifier.height(4.dp))
                                 Text(n.body, fontSize=13.sp, color=MaterialTheme.colorScheme.onSurfaceVariant)

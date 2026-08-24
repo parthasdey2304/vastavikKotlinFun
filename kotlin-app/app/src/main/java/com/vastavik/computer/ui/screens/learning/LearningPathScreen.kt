@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +36,12 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
     var selectedCourse by remember { mutableStateOf("Java") }
     var showPartSheet by remember { mutableStateOf(false) }
     var selectedPart by remember { mutableStateOf("") }
+
+    // Detect neobrutalist mode by checking if medium shape has 0 corner radius
+    val shapes = MaterialTheme.shapes
+    val isNeo = shapes.medium.toString().contains("0.0") && shapes.medium.toString().contains("RoundedCornerShape")
+
+    val nodeShape = if (isNeo) neoShape(0.dp) else neoCircleShape()
 
     val nodes = listOf(
         "Introduction", "Variables & Types", "Control Flow",
@@ -44,6 +53,11 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text("Learning Path") },
+                actions = {
+                    IconButton(onClick = { onNavigate("profile") }) {
+                        Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.primary)
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
                 )
@@ -86,15 +100,15 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        color = VastavikColors.LightPrimary
+                        shape = if (isNeo) neoShape(0.dp) else neoShape(16.dp),
+                        color = MaterialTheme.colorScheme.primary
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
-                            Text("Unit 1", color = Color.White.copy(alpha = 0.8f), fontWeight = FontWeight.Bold)
+                            Text("Unit 1", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f), fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Java Fundamentals", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
+                            Text("Java Fundamentals", color = MaterialTheme.colorScheme.onPrimary, fontSize = 22.sp, fontWeight = FontWeight.Black)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Learn the basics of variables, loops, and OOP.", color = Color.White)
+                            Text("Learn the basics of variables, loops, and OOP.", color = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -119,6 +133,7 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                             // Connector Line (drawn behind)
                             if (index < nodes.lastIndex) {
                                 val nextXOffset = offsets[(index + 1) % offsets.size]
+                                val pathColor = MaterialTheme.colorScheme.primary.copy(alpha = if (index < 3) 1f else 0.3f)
                                 Canvas(modifier = Modifier.fillMaxSize()) {
                                     val startX = size.width / 2 + (xOffset * 100.dp.toPx())
                                     val endX = size.width / 2 + (nextXOffset * 100.dp.toPx())
@@ -131,7 +146,7 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                                                 endX, size.height * 1.5f
                                             )
                                         },
-                                        color = VastavikColors.LightPrimary.copy(alpha = if (index < 3) 1f else 0.3f),
+                                        color = pathColor,
                                         style = Stroke(width = 12.dp.toPx())
                                     )
                                 }
@@ -145,8 +160,8 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                                         showPartSheet = true
                                     }
                                 },
-                                shape = CircleShape,
-                                color = if (index < 3) VastavikColors.LightPrimary else Color(0xFFE5E7EB),
+                                shape = nodeShape,
+                                color = if (index < 3) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                                 shadowElevation = if (index < 3) 8.dp else 2.dp,
                                 modifier = Modifier
                                     .size(if (isTrophy) 80.dp else 72.dp)
@@ -157,14 +172,14 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                                         Icon(
                                             Icons.Filled.EmojiEvents,
                                             contentDescription = "Trophy",
-                                            tint = if (index < 3) Color.White else Color.Gray,
+                                            tint = if (index < 3) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(40.dp)
                                         )
                                     } else {
                                         Icon(
                                             Icons.Filled.Star,
                                             contentDescription = "Star",
-                                            tint = if (index < 3) Color.White else Color.Gray,
+                                            tint = if (index < 3) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(36.dp)
                                         )
                                     }
@@ -205,7 +220,7 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                                 showPartSheet = false
                                 onNavigate("video_lesson/1/1/1/1")
                             },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = if (isNeo) neoShape(0.dp) else neoShape(12.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
@@ -219,7 +234,7 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                                     else -> Icons.Filled.Note
                                 },
                                 contentDescription = null,
-                                tint = VastavikColors.LightPrimary
+                                tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(subpart, fontWeight = FontWeight.W500)

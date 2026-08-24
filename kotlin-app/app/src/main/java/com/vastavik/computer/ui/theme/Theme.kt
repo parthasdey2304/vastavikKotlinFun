@@ -1,5 +1,6 @@
 package com.vastavik.computer.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -73,18 +74,80 @@ private val DarkColorScheme = darkColorScheme(
 fun VastavikTheme(
     darkTheme: Boolean = false,
     neoBrutalish: Boolean = false,
+    neoBrutalAccentIndex: Int = 0,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val accentColor = NeoBrutalistColors.accentByIndex(neoBrutalAccentIndex)
+
+    val colorScheme = if (neoBrutalish) {
+        if (darkTheme) {
+            darkColorScheme(
+                primary = accentColor,
+                primaryContainer = accentColor.copy(alpha = 0.2f),
+                secondary = accentColor,
+                secondaryContainer = accentColor.copy(alpha = 0.15f),
+                tertiary = NeoBrutalistColors.Lime,
+                error = Color(0xFFFF4444),
+                background = NeoBrutalistColors.DarkBg,
+                surface = NeoBrutalistColors.DarkSurface,
+                surfaceVariant = NeoBrutalistColors.DarkSurfaceVariant,
+                onPrimary = Color.Black,
+                onPrimaryContainer = Color.Black,
+                onSecondary = Color.Black,
+                onSecondaryContainer = Color.Black,
+                onTertiary = Color.Black,
+                onError = Color.White,
+                onErrorContainer = Color.White,
+                onBackground = NeoBrutalistColors.DarkTextPrimary,
+                onSurface = NeoBrutalistColors.DarkTextPrimary,
+                onSurfaceVariant = NeoBrutalistColors.DarkTextSecondary,
+                outline = NeoBrutalistColors.Black,
+                outlineVariant = NeoBrutalistColors.Black.copy(alpha = 0.3f),
+                inverseSurface = NeoBrutalistColors.LightSurface,
+                inverseOnSurface = NeoBrutalistColors.LightTextPrimary,
+                inversePrimary = accentColor
+            )
+        } else {
+            lightColorScheme(
+                primary = accentColor,
+                primaryContainer = accentColor.copy(alpha = 0.15f),
+                secondary = accentColor,
+                secondaryContainer = accentColor.copy(alpha = 0.1f),
+                tertiary = Color(0xFF00CC44),
+                error = Color(0xFFFF2222),
+                background = NeoBrutalistColors.LightBg,
+                surface = NeoBrutalistColors.LightSurface,
+                surfaceVariant = NeoBrutalistColors.LightSurfaceVariant,
+                onPrimary = Color.Black,
+                onPrimaryContainer = Color.Black,
+                onSecondary = Color.Black,
+                onSecondaryContainer = Color.Black,
+                onTertiary = Color.White,
+                onError = Color.White,
+                onErrorContainer = Color.White,
+                onBackground = NeoBrutalistColors.LightTextPrimary,
+                onSurface = NeoBrutalistColors.LightTextPrimary,
+                onSurfaceVariant = NeoBrutalistColors.LightTextSecondary,
+                outline = NeoBrutalistColors.Black,
+                outlineVariant = NeoBrutalistColors.Black.copy(alpha = 0.3f),
+                inverseSurface = NeoBrutalistColors.DarkSurface,
+                inverseOnSurface = NeoBrutalistColors.DarkTextPrimary,
+                inversePrimary = accentColor
+            )
+        }
+    } else {
+        if (darkTheme) DarkColorScheme else LightColorScheme
+    }
+
     MaterialTheme(
         colorScheme = colorScheme,
         typography = VastavikTypography,
         shapes = if (neoBrutalish) Shapes(
-            extraSmall = RoundedCornerShape(2.dp),
-            small = RoundedCornerShape(2.dp),
-            medium = RoundedCornerShape(2.dp),
-            large = RoundedCornerShape(2.dp),
-            extraLarge = RoundedCornerShape(2.dp)
+            extraSmall = RoundedCornerShape(0.dp),
+            small = RoundedCornerShape(0.dp),
+            medium = RoundedCornerShape(0.dp),
+            large = RoundedCornerShape(0.dp),
+            extraLarge = RoundedCornerShape(0.dp)
         ) else Shapes(
             extraSmall = RoundedCornerShape(4.dp),
             small = RoundedCornerShape(8.dp),

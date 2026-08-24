@@ -16,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +48,7 @@ fun MyNotesScreen(onNavigate: (String) -> Unit) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showCreateDialog = true },
-                containerColor = VastavikColors.LightPrimary
+                containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add note", tint = Color.White)
             }
@@ -84,7 +86,7 @@ fun MyNotesScreen(onNavigate: (String) -> Unit) {
                 items(notes) { (title, content) ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = neoShape(12.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Row(
@@ -96,7 +98,7 @@ fun MyNotesScreen(onNavigate: (String) -> Unit) {
                             Icon(
                                 Icons.Filled.Note,
                                 contentDescription = null,
-                                tint = VastavikColors.LightPrimary
+                                tint = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
@@ -109,7 +111,7 @@ fun MyNotesScreen(onNavigate: (String) -> Unit) {
                                 Icon(
                                     Icons.Filled.Delete,
                                     contentDescription = "Delete",
-                                    tint = VastavikColors.LightError
+                                    tint = MaterialTheme.colorScheme.error
                                 )
                             }
                         }

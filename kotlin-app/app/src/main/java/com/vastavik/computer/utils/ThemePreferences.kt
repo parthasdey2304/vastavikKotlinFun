@@ -30,6 +30,15 @@ class ThemePreferences @Inject constructor(
     }
     fun setNeoBrutalish(v:Boolean){ sharedPreferences.edit().putBoolean("neo_brutalish", v).apply() }
 
+    // 0=Yellow, 1=Pink, 2=Blue, 3=Lime, 4=Orange, 5=Purple
+    val neoBrutalAccentIndex: Flow<Int> = callbackFlow {
+        trySend(sharedPreferences.getInt("neo_brutal_accent", 0))
+        val l = SharedPreferences.OnSharedPreferenceChangeListener { prefs, k -> if (k=="neo_brutal_accent") trySend(prefs.getInt("neo_brutal_accent", 0)) }
+        sharedPreferences.registerOnSharedPreferenceChangeListener(l)
+        awaitClose { sharedPreferences.unregisterOnSharedPreferenceChangeListener(l) }
+    }
+    fun setNeoBrutalAccentIndex(v:Int){ sharedPreferences.edit().putInt("neo_brutal_accent", v).apply() }
+
     val fontScale: Flow<Float> = callbackFlow {
         trySend(sharedPreferences.getFloat("font_scale", 1f))
         val l = SharedPreferences.OnSharedPreferenceChangeListener { prefs,k -> if(k=="font_scale") trySend(prefs.getFloat("font_scale",1f)) }

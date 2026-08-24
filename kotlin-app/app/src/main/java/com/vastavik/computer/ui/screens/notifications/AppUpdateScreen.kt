@@ -1,4 +1,4 @@
-﻿package com.vastavik.computer.ui.screens.notifications
+package com.vastavik.computer.ui.screens.notifications
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,15 +31,15 @@ fun AppUpdateScreen(onNavigate:(String)->Unit){
         containerColor = MaterialTheme.colorScheme.background
     ){ padding ->
         Column(Modifier.fillMaxSize().padding(padding).padding(24.dp), horizontalAlignment=Alignment.CenterHorizontally){
-            Icon(Icons.Filled.SystemUpdate, contentDescription=null, modifier=Modifier.size(72.dp), tint=VastavikColors.LightPrimary)
+            Icon(Icons.Filled.SystemUpdate, contentDescription=null, modifier=Modifier.size(72.dp), tint=MaterialTheme.colorScheme.primary)
             Spacer(Modifier.height(16.dp))
             Text("Vastavik Computers", fontWeight=FontWeight.Bold, fontSize=20.sp)
             Text("Current: v", color=MaterialTheme.colorScheme.onSurfaceVariant, fontSize=13.sp)
             Spacer(Modifier.height(24.dp))
             if(isUpdateAvailable){
-                Card(shape=RoundedCornerShape(16.dp), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)){
+                Card(shape=neoShape(16.dp), colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface)){
                     Column(Modifier.padding(16.dp)){
-                        Text("Update available: v", fontWeight=FontWeight.Bold, color=VastavikColors.LightPrimary)
+                        Text("Update available: v", fontWeight=FontWeight.Bold, color=MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.height(8.dp))
                         Text("What's new:", fontWeight=FontWeight.W600, fontSize=13.sp)
                         Text("- OCR coding exercise\n- 50% promo banner\n- Full-screen code editor with line numbers\n- Bug fixes", fontSize=13.sp, color=MaterialTheme.colorScheme.onSurfaceVariant, modifier=Modifier.padding(top=4.dp))
@@ -49,9 +51,9 @@ fun AppUpdateScreen(onNavigate:(String)->Unit){
                 OutlinedButton(onClick={onNavigate("home")}, enabled=!force, modifier=Modifier.fillMaxWidth().padding(top=8.dp)){ Text("Later") }
             } else {
                 Spacer(Modifier.height(12.dp))
-                Icon(Icons.Filled.CheckCircle, contentDescription=null, tint=VastavikColors.LightSuccess, modifier=Modifier.size(48.dp))
+                Icon(Icons.Filled.CheckCircle, contentDescription=null, tint=MaterialTheme.colorScheme.tertiary, modifier=Modifier.size(48.dp))
                 Spacer(Modifier.height(8.dp))
-                Text("You're up to date!", color=VastavikColors.LightSuccess, fontWeight=FontWeight.Bold)
+                Text("You're up to date!", color=MaterialTheme.colorScheme.tertiary, fontWeight=FontWeight.Bold)
                 Spacer(Modifier.height(16.dp))
                 OutlinedButton(onClick={onNavigate("home")}, modifier=Modifier.fillMaxWidth()){ Text("Back to Home") }
             }

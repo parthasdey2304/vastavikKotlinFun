@@ -16,6 +16,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @Composable
 fun WelcomeScreen(onNavigate: (String) -> Unit) {
@@ -24,7 +26,7 @@ fun WelcomeScreen(onNavigate: (String) -> Unit) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(VastavikColors.LightPrimary, Color(0xFF6366F1))
+                    colors = listOf(MaterialTheme.colorScheme.primary, Color(0xFF6366F1))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -62,14 +64,14 @@ fun WelcomeScreen(onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
+                shape = neoShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
                 Text(
                     "Get Started",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = VastavikColors.LightPrimary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))

@@ -14,4 +14,6 @@ class SettingsViewModel @Inject constructor(
     fun setDarkMode(isDark: Boolean) { themePreferences.setDarkMode(isDark) }
     val isNeoBrutalish: Flow<Boolean> = themePreferences.isNeoBrutalish
     fun setNeoBrutalish(v: Boolean){ themePreferences.setNeoBrutalish(v) }
+    val neoBrutalAccentIndex: Flow<Int> = themePreferences.neoBrutalAccentIndex
+    fun setNeoBrutalAccentIndex(v: Int){ themePreferences.setNeoBrutalAccentIndex(v) }
 }

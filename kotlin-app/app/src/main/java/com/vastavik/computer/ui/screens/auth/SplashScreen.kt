@@ -48,8 +48,8 @@ fun SplashScreen(onNavigate: (String) -> Unit) {
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        VastavikColors.LightPrimary,
-                        VastavikColors.LightPrimary.copy(alpha = 0.8f)
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
                     )
                 )
             ),

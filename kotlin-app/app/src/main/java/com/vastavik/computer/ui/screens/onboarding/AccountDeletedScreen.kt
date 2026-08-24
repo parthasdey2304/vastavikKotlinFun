@@ -14,6 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @Composable
 fun AccountDeletedScreen(onNavigate: (String) -> Unit) {
@@ -32,7 +34,7 @@ fun AccountDeletedScreen(onNavigate: (String) -> Unit) {
                 Icons.Filled.DeleteForever,
                 contentDescription = null,
                 modifier = Modifier.size(80.dp),
-                tint = VastavikColors.LightError.copy(alpha = 0.7f)
+                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
@@ -55,7 +57,7 @@ fun AccountDeletedScreen(onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = neoShape(12.dp)
             ) {
                 Text("Back to Login")
             }

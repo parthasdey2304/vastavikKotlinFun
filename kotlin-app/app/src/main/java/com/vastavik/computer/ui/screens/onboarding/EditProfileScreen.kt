@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.theme.VastavikColors
+import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.neoCircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +36,7 @@ fun EditProfileScreen(onNavigate: (String) -> Unit) {
                 },
                 actions = {
                     TextButton(onClick = { onNavigate("profile") }) {
-                        Text("Save", color = VastavikColors.LightPrimary)
+                        Text("Save", color = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -107,7 +109,7 @@ fun EditProfileScreen(onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(16.dp)
+                shape = neoShape(16.dp)
             ) {
                 Text("Save Changes", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
