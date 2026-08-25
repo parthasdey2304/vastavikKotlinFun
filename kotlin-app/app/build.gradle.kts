@@ -34,9 +34,9 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY", "")}\"")
         buildConfigField("String", "MISTRAL_API_KEY", "\"${properties.getProperty("MISTRAL_API_KEY", "")}\"")
         buildConfigField("Boolean", "SECURITY_CHECK_ENABLED", "false")
-        // Backend connection — change BACKEND_BASE_URL in local.properties for prod
-        // Emulator: 10.0.2.2:3001  |  Device on LAN: http://192.168.x.x:3001  |  Prod: https://api.vastavik.com
-        buildConfigField("String", "BACKEND_BASE_URL", "\"${properties.getProperty("BACKEND_BASE_URL", "http://10.0.2.2:3001")}\"")
+        // Backend connection — override in local.properties if needed
+        // Prod (Render): https://vastavik-admin-backend.onrender.com  |  Emulator: http://10.0.2.2:3001  |  LAN: http://192.168.x.x:3001
+        buildConfigField("String", "BACKEND_BASE_URL", "\"${properties.getProperty("BACKEND_BASE_URL", "https://vastavik-admin-backend.onrender.com")}\"")
         buildConfigField("String", "API_KEY_ID", "\"${properties.getProperty("API_KEY_ID", "android-prod")}\"")
         buildConfigField("String", "API_KEY_SECRET", "\"${properties.getProperty("API_KEY_SECRET", "dev-secret-android-32bytes-hex-0000")}\"")
     }

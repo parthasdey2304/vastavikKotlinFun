@@ -63,7 +63,7 @@ object Constants {
     const val TRANSACTION_STATUS_REFUNDED = "refunded"
 
     // Deep Link
-    const val DEEP_LINK_HOST = "vastavik-computers.firebaseapp.com"
+    const val DEEP_LINK_HOST = "vastavikcomputers.firebaseapp.com"
     const val DEEP_LINK_SCHEME = "https"
 
     // Notification

@@ -34,7 +34,7 @@
 
 ### Firebase Project
 
-- [ ] Create Firebase projects: `vastavik-prod` + `vastavik-staging`
+- [ ] Create Firebase project: `vastavikcomputers` (unified prod + staging)
 - [ ] Enable: Auth (email/password + Google), Firestore, Storage, FCM
 - [ ] Configure `firebase.json`, `firestore.rules` (from SECURITY.md), `storage.rules`, `firestore.indexes.json`
 - [ ] Set up emulators: `firebase emulators:start` (Auth, Firestore, Functions, Storage)

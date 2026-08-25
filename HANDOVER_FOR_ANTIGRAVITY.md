@@ -85,7 +85,7 @@ cd kotlin-app
 # 4. Output
 # kotlin-app/app/build/outputs/apk/debug/app-debug.apk  (~27 MB)
 # Also copy to root for handover:
-# copy kotlin-app\app\build\outputs\apk\debug\app-debug.apk ..\vastavik-computers-debug.apk
+# copy kotlin-app\app\build\outputs\apk\debug\app-debug.apk ..\vastavikcomputers-debug.apk
 ```
 
 **Key Gradle:** `app/build.gradle.kts` must include `id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")` + `buildConfig true`, `generativeai:0.9.0`, `firebase-bom`, `hilt`, `navigation-compose`, `coil`, `mlkit-text-recognition`, `exoplayer`. See `TRD.md` § deps.

@@ -209,7 +209,7 @@ Home "All Lectures" see-all -> or Learn -> aggregated list filterable by subject
 
 | Link | Destination |
 |---|---|
-| `vastavik-computers.firebaseapp.com/lesson/{id}` | VideoLesson |
+| `vastavikcomputers.firebaseapp.com/lesson/{id}` | VideoLesson |
 | `.../payment` | PaymentScreen |
 | FCM `type: promo` with `promoId` | Show PromoPopup |
 | FCM `type: new_lesson` | Home refresh + notification |

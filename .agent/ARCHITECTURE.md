@@ -58,7 +58,7 @@ D:\vastavikComputers/
 ```
 kotlin-app/
 ├── app/
-│   ├── src/main/java/com/vastavikcomputers/
+│   ├── src/main/java/com/vastavik/computer/
 │   │   ├── di/                         # Hilt modules (AppModule, NetworkModule, DbModule)
 │   │   ├── data/
 │   │   │   ├── remote/                 # Retrofit APIs, Firebase data sources
@@ -374,8 +374,8 @@ functions/src/
 | Env | Web | Functions | Firestore |
 |---|---|---|---|
 | **Local** | `npm run dev` (localhost:3000) + Functions emulator | `firebase emulators:start` | Emulator |
-| **Staging** | Vercel preview / Firebase Hosting preview | `vastavik-staging` project | Staging project |
-| **Prod** | Vercel prod (or Hosting) | `vastavik-prod` us-central1 | Prod project |
+| **Staging** | Vercel preview / Firebase Hosting preview | `vastavikcomputers` (same project, staging build variant) | Staging project |
+| **Prod** | Vercel prod (or Hosting) | `vastavikcomputers` us-central1 | Prod project |
 
 **Secrets:** `GEMINI_API_KEY`, `RAZORPAY_KEY_SECRET`, `CASHFREE_SECRET` in Secret Manager / Vercel env — never committed.
 

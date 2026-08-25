@@ -8,7 +8,7 @@
 
 ### Planned
 
-- **Phase 1 â€” Foundation & Scaffolding (v0.2.0):** Monorepo `web/`, `kotlin-app/`, `functions/`, `shared/`; Firebase project `vastavik-prod`+`staging`; Next.js 15 + Kotlin scaffolds (see PLAN.md).
+- **Phase 1 â€” Foundation & Scaffolding (v0.2.0):** Monorepo `web/`, `kotlin-app/`, `functions/`, `shared/`; Firebase project `vastavikcomputers` (unified); Next.js 15 + Kotlin scaffolds (see PLAN.md).
 - **Phase 2 â€” Core Student Features (v0.3.0):** Content data, video player (HLS/ExoPlayer), theory Markdown.
 - **Phase 3 â€” Interactive Learning (v0.5.0):** Monaco/Compose editor + Docker sandbox, Gemini 3.7 Flash AI chat (`gemini-3.7-flash`), MCQs, coding questions.
 - **Phase 4 â€” Papers & PDF (v0.6.0):** Question paper builder, timed attempts, `pdfkit` PDF export.

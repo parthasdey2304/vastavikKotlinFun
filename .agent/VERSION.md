@@ -1,4 +1,4 @@
-# VERSION.md â€” Version Tracking â€” vastavikComputers
+﻿# VERSION.md â€” Version Tracking â€” vastavikComputers
 
 > **Repo:** https://github.com/parthasdey2304/vastavikComputers | **Root:** D:\vastavikComputers
 
@@ -84,10 +84,10 @@ Update this table when bumping any major dep (with CHANGELOG entry).
 
 | Target | Platform | Hosting | Region | Env |
 |---|---|---|---|---|
-| **Web prod** | Vercel (or Firebase Hosting) | `vastavikcomputers.vercel.app` / Hosting | auto / `asia-south1` | `vastavik-prod` |
-| **Web staging** | Vercel preview / Hosting preview | Preview URL | auto | `vastavik-staging` |
-| **Android prod** | Play Store | â€” | â€” | `vastavik-prod` |
-| **Android beta** | Play internal track | â€” | â€” | `vastavik-staging` |
+| **Web prod** | Vercel (or Firebase Hosting) | `vastavikcomputers.vercel.app` / Hosting | auto / `asia-south1` | `vastavikcomputers` |
+| **Web staging** | Vercel preview / Hosting preview | Preview URL | auto | `vastavikcomputers` (staging variant) |
+| **Android prod** | Play Store | â€” | â€” | `vastavikcomputers` |
+| **Android beta** | Play internal track | â€” | â€” | `vastavikcomputers (staging variant)` |
 | **Cloud Functions** | Firebase | â€” | `us-central1` (or `asia-south1`) | per project |
 | **Firestore** | Firebase | â€” | `asia-south1` (Mumbai) | per project |
 | **Code Sandbox** | Cloud Run (Docker) | â€” | `asia-south1` | per project |

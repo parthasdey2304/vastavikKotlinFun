@@ -59,7 +59,7 @@ vastavikKotlinFun/
 │   └── local.properties        # MISTRAL_API_KEY, GEMINI_API_KEY, sdk.dir
 ├── .agent/                     # 22 spec docs (PRD, TRD, APP_FLOW, BACKEND_SCHEMA...)
 ├── HANDOVER_FOR_ANTIGRAVITY.md # 7-section handover (21 pages, Stitch link, build steps)
-└── vastavik-computers-debug.apk
+└── vastavikcomputers-debug.apk
 ```
 
 ---
