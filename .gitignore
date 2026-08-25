@@ -32,3 +32,15 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Backend (separate repo)
+backend/
+
+# Env secrets
+.env
+.env.local
+.env*.local
+webapp/.env
+webapp/.env.local
+webapp/node_modules/
+webapp/.next/

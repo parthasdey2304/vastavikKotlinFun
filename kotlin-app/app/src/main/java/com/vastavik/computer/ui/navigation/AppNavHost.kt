@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.vastavik.computer.ui.screens.auth.ForgotPasswordScreen
 import com.vastavik.computer.ui.screens.auth.LoginScreen
 import com.vastavik.computer.ui.screens.auth.SignupScreen
+import com.vastavik.computer.ui.screens.auth.SecurityCheckScreen
 import com.vastavik.computer.ui.screens.auth.SplashScreen
 import com.vastavik.computer.ui.screens.chat.ChatScreen
 import com.vastavik.computer.ui.screens.home.HomeScreen
@@ -43,6 +44,13 @@ fun AppNavHost(
     NavHost(navController = navController, startDestination = startRoute) {
         composable("splash") {
             SplashScreen(onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo("splash") { inclusive = true }
+                }
+            })
+        }
+        composable("security_check") {
+            SecurityCheckScreen(onNavigate = { route ->
                 navController.navigate(route) {
                     popUpTo("splash") { inclusive = true }
                 }

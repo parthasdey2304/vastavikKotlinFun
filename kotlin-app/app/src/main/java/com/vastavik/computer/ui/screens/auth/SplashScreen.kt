@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
+import com.vastavik.computer.BuildConfig
 import com.vastavik.computer.ui.theme.VastavikColors
 import kotlinx.coroutines.delay
 
@@ -34,11 +35,15 @@ fun SplashScreen(onNavigate: (String) -> Unit) {
             animationSpec = tween(durationMillis = 500)
         )
         delay(2000)
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            onNavigate("home")
+        if (BuildConfig.SECURITY_CHECK_ENABLED) {
+            onNavigate("security_check")
         } else {
-            onNavigate("login")
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user != null) {
+                onNavigate("home")
+            } else {
+                onNavigate("login")
+            }
         }
     }
 

@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root { color-scheme: light; --accent: #4F46E5; --radius: 20px; }
+html.dark { color-scheme: dark; }
+* { font-family: Inter, system-ui, sans-serif; }
+h1,h2,h3,.font-display { font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif; }
+body { @apply bg-[#F8FAFC] text-ink antialiased transition-colors duration-200; }
+html.dark body { @apply bg-[#0F172A] text-zinc-100; }
+
+/* Card system — Stitch-level */
+.neo { @apply rounded-[20px] border border-slate-200/70 bg-white shadow-card transition-all duration-200; }
+.neo:hover { @apply shadow-card-hover; }
+html.dark .neo { @apply bg-zinc-800 border-zinc-700 text-zinc-100 shadow-none; }
+html.dark header { @apply bg-zinc-900/80 border-zinc-800; }
+html.dark input[type="range"] { @apply accent-white; }
+
+/* Neo-Brutalist mode (keeps Settings toggle functional) */
+html.neo-brutalist .neo { @apply border-2 border-black shadow-[4px_4px_0_0_#000] rounded-[12px]; }
+html.neo-brutalist.dark .neo { @apply border-white shadow-[4px_4px_0_0_#fff]; }
+
+/* Utilities */
+.glass { @apply bg-white/80 backdrop-blur-xl border border-white/30; }
+html.dark .glass { @apply bg-zinc-800/80 border-zinc-700/50; }
+.gradient-brand { background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #06B6D4 100%); }
+.gradient-mesh { background: radial-gradient(600px circle at 0% 0%, #EEF2FF 0%, transparent 50%), radial-gradient(800px circle at 100% 0%, #ECFEFF 0%, transparent 50%); }
+html.dark .gradient-mesh { background: radial-gradient(600px circle at 0% 0%, #1E1B4B 0%, transparent 50%), radial-gradient(800px circle at 100% 0%, #0C4A6E 0%, transparent 50%); }

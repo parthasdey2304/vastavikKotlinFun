@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "VastavikComputers"
+rootProject.name = "VastavikCode"
 include(":app")

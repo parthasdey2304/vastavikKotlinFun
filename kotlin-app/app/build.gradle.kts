@@ -26,9 +26,19 @@ android {
         }
         
         val properties = Properties()
-        properties.load(project.rootProject.file("local.properties").inputStream())
+        // Safe load: local.properties may be missing in CI
+        val localPropsFile = project.rootProject.file("local.properties")
+        if (localPropsFile.exists()) {
+            properties.load(localPropsFile.inputStream())
+        }
         buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY", "")}\"")
         buildConfigField("String", "MISTRAL_API_KEY", "\"${properties.getProperty("MISTRAL_API_KEY", "")}\"")
+        buildConfigField("Boolean", "SECURITY_CHECK_ENABLED", "false")
+        // Backend connection — change BACKEND_BASE_URL in local.properties for prod
+        // Emulator: 10.0.2.2:3001  |  Device on LAN: http://192.168.x.x:3001  |  Prod: https://api.vastavik.com
+        buildConfigField("String", "BACKEND_BASE_URL", "\"${properties.getProperty("BACKEND_BASE_URL", "http://10.0.2.2:3001")}\"")
+        buildConfigField("String", "API_KEY_ID", "\"${properties.getProperty("API_KEY_ID", "android-prod")}\"")
+        buildConfigField("String", "API_KEY_SECRET", "\"${properties.getProperty("API_KEY_SECRET", "dev-secret-android-32bytes-hex-0000")}\"")
     }
 
     signingConfigs {
@@ -136,6 +146,13 @@ dependencies {
 
     // Google Generative AI
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    // Backend API — Retrofit + OkHttp + Serialization
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.google.code.gson:gson:2.11.0")
 
     // Lottie
     implementation("com.airbnb.android:lottie-compose:6.6.2")

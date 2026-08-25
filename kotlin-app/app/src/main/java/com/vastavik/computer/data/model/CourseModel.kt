@@ -124,7 +124,13 @@ data class LessonModel(
     val codeSample: String = "",
     val notes: String = "",
     val order: Int = 0,
-    val createdAt: String = ""
+    val createdAt: String = "",
+    // Backend-enriched fields — keep defaults so old docs still parse
+    val youtubeVideoId: String = "",
+    val durationSec: Int = 0,
+    val isPremium: Boolean = false,
+    val isPublished: Boolean = true,
+    val videoFormat: String = "vscode"
 ) {
     fun toMap(): Map<String, Any> = mapOf(
         "title" to title,
@@ -136,6 +142,11 @@ data class LessonModel(
         "codeSample" to codeSample,
         "notes" to notes,
         "order" to order,
+        "youtubeVideoId" to youtubeVideoId,
+        "durationSec" to durationSec,
+        "isPremium" to isPremium,
+        "isPublished" to isPublished,
+        "videoFormat" to videoFormat,
         "createdAt" to if (createdAt.isEmpty()) FieldValue.serverTimestamp() else createdAt
     )
 
@@ -148,24 +159,34 @@ data class LessonModel(
         "youtubePositionSec" to youtubePositionSec,
         "whiteboardImageUrl" to whiteboardImageUrl,
         "codeSample" to codeSample,
-        "notes" to notes
+        "notes" to notes,
+        "youtubeVideoId" to youtubeVideoId,
+        "videoFormat" to videoFormat
     )
 
     companion object {
         fun fromSnapshot(doc: DocumentSnapshot): LessonModel {
             val data = doc.data ?: return LessonModel(id = doc.id)
+            val ytUrl = data["youtubeUrl"] as? String ?: ""
+            val vid = (data["youtubeVideoId"] as? String)
+                ?: Regex("""(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/embed/)([A-Za-z0-9_-]{11})""").find(ytUrl)?.groupValues?.get(1) ?: ""
             return LessonModel(
                 id = doc.id,
                 title = data["title"] as? String ?: "",
                 description = data["description"] as? String ?: "",
-                youtubeUrl = data["youtubeUrl"] as? String ?: "",
+                youtubeUrl = ytUrl,
                 duration = data["duration"] as? String ?: "",
                 youtubePositionSec = (data["youtubePositionSec"] as? Number)?.toInt() ?: 0,
                 whiteboardImageUrl = data["whiteboardImageUrl"] as? String ?: "",
                 codeSample = data["codeSample"] as? String ?: "",
                 notes = data["notes"] as? String ?: "",
                 order = (data["order"] as? Number)?.toInt() ?: 0,
-                createdAt = data["createdAt"]?.toString() ?: ""
+                createdAt = data["createdAt"]?.toString() ?: "",
+                youtubeVideoId = vid,
+                durationSec = (data["durationSec"] as? Number)?.toInt() ?: 0,
+                isPremium = data["isPremium"] as? Boolean ?: false,
+                isPublished = data["isPublished"] as? Boolean ?: true,
+                videoFormat = data["videoFormat"] as? String ?: "vscode"
             )
         }
     }

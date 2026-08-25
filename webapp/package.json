@@ -1,0 +1,28 @@
+{
+  "name": "vastavik-webapp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vastavik Web — student webapp mirroring the Kotlin Android app. Same backend, same courses, same unlisted YouTube player (no YouTube branding).",
+  "scripts": {
+    "dev": "next dev --port 3002",
+    "dev:clean": "powershell -Command \"Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue\"; next dev --port 3002",
+    "clean": "powershell -Command \"Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue\"",
+    "build": "next build",
+    "start": "next start --port 3002",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "firebase": "^11.6.1",
+    "next": "15.1.8",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.6.3"
+  }
+}
