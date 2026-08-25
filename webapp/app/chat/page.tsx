@@ -1,12 +1,16 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { usePersistedState } from "@/lib/usePersistedState";
 
 // Mirrors ChatScreen.kt — Vastavik AI via Mistral, suggestions, markdown, Open in Editor
 const SYSTEM_PROMPT="You are Vastavik AI, a helpful programming tutor for Indian school students Class 5-12. Only answer programming/CS questions, politely refuse others. Be crisp, school-level, use code blocks.";
+const DEFAULT_MSGS: {role:"user"|"ai"; text:string}[] = [{role:"ai",text:"Hello! I am Vastavik AI. Ask me anything about Java/Python/JS/SQL."}];
 export default function Chat(){
-  const [msgs,setMsgs]=useState<{role:"user"|"ai"; text:string}[]>([{role:"ai",text:"Hello! I am Vastavik AI. Ask me anything about Java/Python/JS/SQL."}]);
+  const [msgs,setMsgs]=usePersistedState<{role:"user"|"ai"; text:string}[]>("vastavik_chat_messages", DEFAULT_MSGS);
   const [input,setInput]=useState(""); const [loading,setLoading]=useState(false); const listRef=useRef<HTMLDivElement>(null);
   const suggestions=["Explain Code","Generate Quiz","Find Bug"];
+
+  useEffect(()=>{ setTimeout(()=>listRef.current?.scrollTo(0,99999),100); },[]);
 
   async function askMistral(prompt:string){
     setLoading(true);
@@ -22,7 +26,7 @@ export default function Chat(){
 
   return (
     <div className="flex flex-col h-[75vh]">
-      <div className="flex justify-between items-center"><h1 className="font-bold flex items-center gap-2">🤖 Vastavik AI <span className="text-xs bg-zinc-100 px-2 py-1 rounded-full">Mistral Small</span></h1><button onClick={()=>setMsgs([{role:"ai",text:"Hello! I am Vastavik AI..."}])} className="text-xs text-brand">+ New</button></div>
+      <div className="flex justify-between items-center"><h1 className="font-bold flex items-center gap-2">🤖 Vastavik AI <span className="text-xs bg-zinc-100 px-2 py-1 rounded-full">Mistral Small</span></h1><button onClick={()=>setMsgs(DEFAULT_MSGS)} className="text-xs text-brand">+ New</button></div>
       <div className="mt-3 flex gap-2 overflow-x-auto pb-2">{suggestions.map(s=> <button key={s} onClick={()=>send(s)} className="shrink-0 rounded-full border bg-white px-3 py-2 text-sm">{s}</button>)}</div>
       <div ref={listRef} className="flex-1 overflow-y-auto space-y-3 mt-3 pr-1">
         {msgs.map((m,i)=> (

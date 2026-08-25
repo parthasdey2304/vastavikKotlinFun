@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiGet, CourseDto, PartDto } from "@/lib/api";
 import { getIdToken } from "@/lib/firebase";
+import { usePersistedState } from "@/lib/usePersistedState";
 
 // Mirrors LearningPathScreen.kt:34 — zigzag nodes, course tabs, unit header, bottom sheet subparts
 export default function LearningPath(){
   const [courses,setCourses]=useState<CourseDto[]>([]);
-  const [selected,setSelected]=useState<string>("");
+  const [selected,setSelected]=usePersistedState<string>("vastavik_learn_selected","");
   const [parts,setParts]=useState<PartDto[]>([]);
   const [sheetPart,setSheetPart]=useState<PartDto|null>(null);
   const offsets=[0,0.4,0.8,0.4,0,-0.4,-0.8,-0.4];
