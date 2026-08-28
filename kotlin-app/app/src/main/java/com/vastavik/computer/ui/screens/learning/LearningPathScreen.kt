@@ -25,11 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vastavik.computer.ui.theme.VastavikColors
-import com.vastavik.computer.ui.theme.neoShape
-import com.vastavik.computer.ui.theme.neoCircleShape
+import com.vastavik.computer.ui.components.VastavikTopBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LearningPathScreen(onNavigate: (String) -> Unit) {
     val courses = listOf("Java", "Python", "C++", "Web Dev")
@@ -37,89 +34,93 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
     var showPartSheet by remember { mutableStateOf(false) }
     var selectedPart by remember { mutableStateOf("") }
 
-    // Detect neobrutalist mode by checking if medium shape has 0 corner radius
-    val shapes = MaterialTheme.shapes
-    val isNeo = shapes.medium.toString().contains("0.0") && shapes.medium.toString().contains("RoundedCornerShape")
-
-    val nodeShape = if (isNeo) neoShape(0.dp) else neoCircleShape()
-
     val nodes = listOf(
-        "Introduction", "Variables & Types", "Control Flow",
-        "Arrays & Lists", "OOP Basics", "Inheritance",
-        "Polymorphism", "File Handling", "Final Project"
+        "Introduction", "Variables", "Control Flow",
+        "Functions", "OOP Basics", "Collections",
+        "File I/O", "Project", "Final Project"
     )
+    val offsets = listOf(0f, 0.4f, 0.8f, 0.4f, 0f, -0.4f, -0.8f, -0.4f, 0f)
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Learning Path") },
-                actions = {
-                    IconButton(onClick = { onNavigate("profile") }) {
-                        Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.primary)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
+            // Top bar
+            VastavikTopBar(onProfileClick = { onNavigate("profile") })
+
+            // Title
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Learning Path",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+
             // Course selector chips
-            ScrollableTabRow(
-                selectedTabIndex = courses.indexOf(selectedCourse).coerceAtLeast(0),
-                edgePadding = 16.dp,
-                containerColor = MaterialTheme.colorScheme.background,
-                divider = {}
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 courses.forEach { course ->
-                    Tab(
-                        selected = selectedCourse == course,
+                    val isSelected = selectedCourse == course
+                    Surface(
                         onClick = { selectedCourse = course },
-                        text = {
-                            FilterChip(
-                                selected = selectedCourse == course,
-                                onClick = { selectedCourse = course },
-                                label = { Text(course) }
-                            )
-                        }
-                    )
+                        shape = RoundedCornerShape(50.dp),
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                        border = if (!isSelected) androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null
+                    ) {
+                        Text(
+                            text = course,
+                            modifier = Modifier.padding(horizontal = 18.dp, vertical = 10.dp),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
+
+            // Unit Header
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Unit 1", color = Color.White.copy(alpha = 0.8f), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("Java Fundamentals", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Black)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("Master the basics of Java programming", color = Color.White.copy(alpha = 0.9f), fontSize = 13.sp)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Zigzag path
             LazyColumn(
                 state = rememberLazyListState(),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(vertical = 24.dp)
+                contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                item {
-                    // Unit Header
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        shape = if (isNeo) neoShape(0.dp) else neoShape(16.dp),
-                        color = MaterialTheme.colorScheme.primary
-                    ) {
-                        Column(modifier = Modifier.padding(20.dp)) {
-                            Text("Unit 1", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f), fontWeight = FontWeight.Bold)
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text("Java Fundamentals", color = MaterialTheme.colorScheme.onPrimary, fontSize = 22.sp, fontWeight = FontWeight.Black)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text("Learn the basics of variables, loops, and OOP.", color = MaterialTheme.colorScheme.onPrimary)
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
                 itemsIndexed(nodes) { index, node ->
                     val isTrophy = index == nodes.lastIndex
-                    // Zigzag calculation
-                    val offsets = listOf(0f, 0.4f, 0.8f, 0.4f, 0f, -0.4f, -0.8f, -0.4f)
+                    val isDone = index < 3
+                    val isCurrent = index == 3
                     val xOffset = offsets[index % offsets.size]
-                    
+
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -127,31 +128,25 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(100.dp),
+                                .height(90.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            // Connector Line (drawn behind)
+                            // Connector Line
                             if (index < nodes.lastIndex) {
                                 val nextXOffset = offsets[(index + 1) % offsets.size]
-                                val pathColor = MaterialTheme.colorScheme.primary.copy(alpha = if (index < 3) 1f else 0.3f)
+                                val pathColor = MaterialTheme.colorScheme.primary.copy(alpha = if (isDone || isCurrent) 1f else 0.2f)
                                 Canvas(modifier = Modifier.fillMaxSize()) {
                                     val startX = size.width / 2 + (xOffset * 100.dp.toPx())
                                     val endX = size.width / 2 + (nextXOffset * 100.dp.toPx())
-                                    drawPath(
-                                        path = Path().apply {
-                                            moveTo(startX, size.height / 2)
-                                            cubicTo(
-                                                startX, size.height,
-                                                endX, 0f,
-                                                endX, size.height * 1.5f
-                                            )
-                                        },
+                                    drawLine(
                                         color = pathColor,
-                                        style = Stroke(width = 12.dp.toPx())
+                                        start = Offset(startX, size.height / 2),
+                                        end = Offset(endX, size.height / 2),
+                                        strokeWidth = 4.dp.toPx()
                                     )
                                 }
                             }
-                            
+
                             // Node Button
                             Surface(
                                 onClick = {
@@ -160,32 +155,48 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                                         showPartSheet = true
                                     }
                                 },
-                                shape = nodeShape,
-                                color = if (index < 3) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                                shadowElevation = if (index < 3) 8.dp else 2.dp,
+                                shape = CircleShape,
+                                color = when {
+                                    isDone -> MaterialTheme.colorScheme.primary
+                                    isCurrent -> Color.White
+                                    else -> MaterialTheme.colorScheme.surfaceVariant
+                                },
+                                shadowElevation = if (isDone || isCurrent) 6.dp else 1.dp,
                                 modifier = Modifier
-                                    .size(if (isTrophy) 80.dp else 72.dp)
-                                    .offset(x = (xOffset * 100).dp)
+                                    .size(if (isTrophy) 72.dp else 64.dp)
+                                    .offset(x = (xOffset * 80).dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     if (isTrophy) {
                                         Icon(
                                             Icons.Filled.EmojiEvents,
                                             contentDescription = "Trophy",
-                                            tint = if (index < 3) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.size(40.dp)
+                                            tint = if (isDone) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(32.dp)
                                         )
                                     } else {
                                         Icon(
                                             Icons.Filled.Star,
                                             contentDescription = "Star",
-                                            tint = if (index < 3) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.size(36.dp)
+                                            tint = when {
+                                                isDone -> Color.White
+                                                isCurrent -> MaterialTheme.colorScheme.primary
+                                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                                            },
+                                            modifier = Modifier.size(28.dp)
                                         )
                                     }
                                 }
                             }
                         }
+                        Text(
+                            text = node,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
                     }
                 }
             }
@@ -220,7 +231,7 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                                 showPartSheet = false
                                 onNavigate("video_lesson/1/1/1/1")
                             },
-                        shape = if (isNeo) neoShape(0.dp) else neoShape(12.dp)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
@@ -238,6 +249,12 @@ fun LearningPathScreen(onNavigate: (String) -> Unit) {
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(subpart, fontWeight = FontWeight.W500)
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(
+                                Icons.Filled.ChevronRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 }

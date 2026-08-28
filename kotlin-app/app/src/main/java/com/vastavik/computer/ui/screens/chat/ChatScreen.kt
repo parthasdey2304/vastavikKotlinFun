@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
@@ -39,6 +40,7 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import android.net.Uri
+import com.vastavik.computer.ui.components.VastavikTopBar
 
 data class ChatMessage(val text: String, val isUser: Boolean)
 
@@ -96,7 +98,6 @@ private fun callMistralApi(messages: List<ChatMessage>): String {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(onNavigate: (String) -> Unit) {
     val viewModel = remember { ChatViewModel.getInstance() }
@@ -116,38 +117,60 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().imePadding()) {
-        TopAppBar(
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.SmartToy, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Vastavik AI", fontWeight = FontWeight.Bold)
-                    Spacer(Modifier.width(8.dp))
-                    Surface(shape = neoShape(8.dp), color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)) {
-                        Text("Mistral Small", modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)
-                    }
-                }
-            },
-            actions = {
-                IconButton(onClick = { viewModel.clearMessages() }) {
-                    Icon(Icons.Filled.Add, contentDescription = "New Chat", tint = MaterialTheme.colorScheme.primary)
-                }
-                IconButton(onClick = { onNavigate("profile") }) {
-                    Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.primary)
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            windowInsets = WindowInsets(0.dp)
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        // Top bar
+        VastavikTopBar(onProfileClick = { onNavigate("profile") })
+
         Column(modifier = Modifier.fillMaxSize()) {
-            LazyRow(modifier = Modifier.padding(vertical = 8.dp), contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Header row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Filled.SmartToy, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("Vastavik AI", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                Spacer(Modifier.width(8.dp))
+                Surface(
+                    shape = RoundedCornerShape(50.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    Text(
+                        "Mistral Small",
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "+ New",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable { viewModel.clearMessages() }
+                )
+            }
+
+            // Suggestion chips
+            LazyRow(
+                modifier = Modifier.padding(vertical = 8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(listOf(
                     "Explain Code" to "Explain this Java code for Class 8: public class Hello { public static void main(String[] args){ System.out.println(\"hi\"); } }",
                     "Generate Quiz" to "Generate 3 MCQs about Python loops for Class 7 with 4 options each.",
                     "Find Bug" to "Help me find bug in this Python: for i in range(5) print(i)"
                 )) { (label, prompt) ->
-                    SuggestionChip(
+                    Surface(
                         onClick = {
                             if (!isLoading) {
                                 viewModel.addMessage(ChatMessage(prompt, isUser = true))
@@ -161,28 +184,56 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                                 }
                             }
                         },
-                        label = { Text(label, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
-                        colors = SuggestionChipDefaults.suggestionChipColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
-                        border = null,
-                        shape = neoShape(16.dp)
-                    )
+                        shape = RoundedCornerShape(50.dp),
+                        color = MaterialTheme.colorScheme.surface,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    ) {
+                        Text(
+                            label,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
 
-            LazyColumn(state = listState, modifier = Modifier.weight(1f).fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            // Messages
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
                 items(messages) { message -> ChatBubbleRow(message, onNavigate) }
                 if (isLoading) {
                     item {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                            Box(modifier = Modifier.size(32.dp).clip(neoCircleShape()).background(MaterialTheme.colorScheme.primary), contentAlignment = Alignment.Center) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
                             }
                             Spacer(Modifier.width(8.dp))
-                            Surface(shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp), color = MaterialTheme.colorScheme.surface) {
-                                Row(modifier = Modifier.padding(16.dp)) {
-                                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.primary)
+                            Surface(
+                                shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp),
+                                color = MaterialTheme.colorScheme.surfaceVariant
+                            ) {
+                                Row(modifier = Modifier.padding(14.dp)) {
+                                    CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.primary)
                                     Spacer(Modifier.width(8.dp))
-                                    Text("Thinking...", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text("Thinking\u2026", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                         }
@@ -190,14 +241,32 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                 }
             }
 
-            Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface, shadowElevation = 8.dp) {
-                Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            // Input area
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surface,
+                shadowElevation = 8.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp, vertical = 10.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     OutlinedTextField(
-                        value = inputText, onValueChange = { inputText = it },
-                        placeholder = { Text("Ask anything (Java/Python/JS/SQL)...") },
-                        modifier = Modifier.weight(1f).heightIn(min = 48.dp, max = 120.dp),
-                        shape = neoShape(24.dp), singleLine = false, maxLines = 5,
-                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline)
+                        value = inputText,
+                        onValueChange = { inputText = it },
+                        placeholder = { Text("Ask anything (Java/Python/JS/SQL)...", fontSize = 14.sp) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp, max = 120.dp),
+                        shape = RoundedCornerShape(50.dp),
+                        singleLine = false,
+                        maxLines = 5,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
                     )
                     Spacer(Modifier.width(8.dp))
                     FilledIconButton(
@@ -218,8 +287,12 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                             }
                         },
                         enabled = inputText.isNotBlank() && !isLoading,
-                        colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.primary)
-                    ) { Icon(Icons.Filled.Send, contentDescription = "Send", tint = Color.White) }
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Icon(Icons.Filled.Send, contentDescription = "Send", tint = Color.White)
+                    }
                 }
             }
         }
@@ -228,42 +301,54 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
 
 @Composable
 private fun ChatBubbleRow(message: ChatMessage, onNavigate: (String) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start
+    ) {
         if (!message.isUser) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .shadow(4.dp, neoCircleShape())
-                    .clip(neoCircleShape())
+                    .size(32.dp)
+                    .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
+                Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
             }
-            Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.width(8.dp))
         }
         Surface(
-            shape = if (MaterialTheme.shapes.medium.toString().contains("0.0")) RoundedCornerShape(0.dp) else RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = if (message.isUser) 16.dp else 4.dp, bottomEnd = if (message.isUser) 4.dp else 16.dp),
-            color = if (message.isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-            modifier = Modifier.widthIn(max = 300.dp)
+            shape = RoundedCornerShape(
+                topStart = 16.dp,
+                topEnd = 16.dp,
+                bottomStart = if (message.isUser) 16.dp else 4.dp,
+                bottomEnd = if (message.isUser) 4.dp else 16.dp
+            ),
+            color = if (message.isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+            modifier = Modifier.widthIn(max = 280.dp)
         ) {
             if (message.isUser) {
-                Text(text = message.text, modifier = Modifier.padding(12.dp), color = Color.White, fontSize = 14.sp, lineHeight = 20.sp)
+                Text(
+                    text = message.text,
+                    modifier = Modifier.padding(12.dp),
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
+                )
             } else {
                 ParsedMarkdownText(text = message.text, modifier = Modifier, onNavigate = onNavigate)
             }
         }
         if (message.isUser) {
-            Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.width(8.dp))
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .shadow(4.dp, neoCircleShape())
-                    .clip(neoCircleShape())
-                    .background(MaterialTheme.colorScheme.secondary),
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onBackground),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Filled.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
+                Icon(Icons.Filled.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
             }
         }
     }
@@ -285,35 +370,58 @@ fun ParsedMarkdownText(text: String, modifier: Modifier = Modifier, onNavigate: 
                             val encoded = Uri.encode(codeContent, "UTF-8")
                             onNavigate("code_editor?initialCode=$encoded&language=$language")
                         },
-                        shape = neoShape(12.dp),
+                        shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Filled.OpenInFull, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Filled.OpenInFull, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(8.dp))
                             Column {
-                                Text("Open in Editor", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                Text("Open in Editor", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                                 if (language.isNotEmpty()) {
-                                    Text(language, color = Color.White.copy(alpha = 0.7f), fontSize = 11.sp)
+                                    Text(language, color = Color.White.copy(alpha = 0.7f), fontSize = 10.sp)
                                 }
                             }
                         }
                     }
                 } else if (codeContent.isNotBlank()) {
                     Surface(
-                        shape = neoShape(8.dp), color = Color(0xFF1E1E1E),
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                        shape = RoundedCornerShape(8.dp),
+                        color = Color(0xFF1E1E2E),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            if (language.isNotEmpty()) { Text(language, fontSize = 10.sp, color = Color.Gray); Spacer(Modifier.height(8.dp)) }
+                            if (language.isNotEmpty()) {
+                                Text(language, fontSize = 10.sp, color = Color.Gray)
+                                Spacer(Modifier.height(8.dp))
+                            }
                             codeLines.forEachIndexed { i, line ->
                                 Row(modifier = Modifier.fillMaxWidth()) {
-                                    Text(text = "${'$'}{i + 1}", color = Color(0xFF858585), fontFamily = FontFamily.Monospace, fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.End, modifier = Modifier.width(28.dp).padding(end = 8.dp))
-                                    Text(text = highlightCode(if (line.isEmpty()) " " else line), color = Color(0xFFD4D4D4), fontFamily = FontFamily.Monospace, fontSize = 12.sp, modifier = Modifier.weight(1f))
+                                    Text(
+                                        text = "${'$'}{i + 1}",
+                                        color = Color(0xFF858585),
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 11.sp,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.End,
+                                        modifier = Modifier
+                                            .width(24.dp)
+                                            .padding(end = 8.dp)
+                                    )
+                                    Text(
+                                        text = highlightCode(if (line.isEmpty()) " " else line),
+                                        color = Color(0xFFD4D4D4),
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = 11.sp,
+                                        modifier = Modifier.weight(1f)
+                                    )
                                 }
                             }
                         }
@@ -321,7 +429,13 @@ fun ParsedMarkdownText(text: String, modifier: Modifier = Modifier, onNavigate: 
                 }
             } else {
                 if (part.trim().isNotEmpty()) {
-                    Text(text = parseBasicMarkdown(part.trim()), color = MaterialTheme.colorScheme.onBackground, fontSize = 14.sp, lineHeight = 20.sp, modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp))
+                    Text(
+                        text = parseBasicMarkdown(part.trim()),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                    )
                 }
             }
         }
@@ -336,9 +450,9 @@ private fun parseBasicMarkdown(text: String) = buildAnnotatedString {
         val isHeader2 = line.startsWith("## ")
         val isHeader1 = line.startsWith("# ")
         val style = when {
-            isHeader1 -> SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp)
-            isHeader2 -> SpanStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            isHeader3 -> SpanStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            isHeader1 -> SpanStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)
+            isHeader2 -> SpanStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            isHeader3 -> SpanStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)
             else -> null
         }
         val textToProcess = when {
@@ -347,7 +461,11 @@ private fun parseBasicMarkdown(text: String) = buildAnnotatedString {
             isHeader3 -> line.removePrefix("### ")
             else -> line
         }
-        if (style != null) { withStyle(style) { parseInlineMarkdown(textToProcess, this@buildAnnotatedString) } } else { parseInlineMarkdown(textToProcess, this@buildAnnotatedString) }
+        if (style != null) {
+            withStyle(style) { parseInlineMarkdown(textToProcess, this@buildAnnotatedString) }
+        } else {
+            parseInlineMarkdown(textToProcess, this@buildAnnotatedString)
+        }
         if (i < lines.size - 1) append("\n")
     }
 }
@@ -359,9 +477,15 @@ private fun parseInlineMarkdown(text: String, builder: androidx.compose.ui.text.
     for (match in matches) {
         builder.append(text.substring(currentIndex, match.range.first))
         when {
-            match.groups[1] != null -> { builder.withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(match.groups[1]!!.value) } }
-            match.groups[2] != null -> { builder.withStyle(SpanStyle(background = Color(0x22888888), fontFamily = FontFamily.Monospace)) { append(match.groups[2]!!.value) } }
-            match.groups[3] != null -> { builder.withStyle(SpanStyle(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)) { append(match.groups[3]!!.value) } }
+            match.groups[1] != null -> {
+                builder.withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(match.groups[1]!!.value) }
+            }
+            match.groups[2] != null -> {
+                builder.withStyle(SpanStyle(background = Color(0x22888888), fontFamily = FontFamily.Monospace)) { append(match.groups[2]!!.value) }
+            }
+            match.groups[3] != null -> {
+                builder.withStyle(SpanStyle(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)) { append(match.groups[3]!!.value) }
+            }
         }
         currentIndex = match.range.last + 1
     }
@@ -369,14 +493,20 @@ private fun parseInlineMarkdown(text: String, builder: androidx.compose.ui.text.
 }
 
 private fun highlightCode(code: String) = buildAnnotatedString {
-    val keywords = listOf("class", "fun", "public", "private", "protected", "override", "return", "val", "var", "import", "package", "if", "else", "for", "while", "true", "false", "null")
+    val keywords = listOf("class", "fun", "public", "private", "protected", "override", "return", "val", "var", "import", "package", "if", "else", "for", "while", "true", "false", "null", "static", "void", "new", "Scanner", "System", "out", "print", "println", "String", "int", "args", "main")
     val types = listOf("String", "Int", "Boolean", "Double", "Float", "Long")
     val words = code.split(Regex("(?<=\\b|\\s)|(?=\\b|\\s)"))
     for (word in words) {
         when {
-            word in keywords -> { withStyle(style = SpanStyle(color = Color(0xFF569CD6))) { append(word) } }
-            word in types -> { withStyle(style = SpanStyle(color = Color(0xFF4EC9B0))) { append(word) } }
-            else -> { append(word) }
+            word in keywords -> {
+                withStyle(style = SpanStyle(color = Color(0xFF569CD6))) { append(word) }
+            }
+            word in types -> {
+                withStyle(style = SpanStyle(color = Color(0xFF4EC9B0))) { append(word) }
+            }
+            else -> {
+                append(word)
+            }
         }
     }
 }

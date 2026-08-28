@@ -17,97 +17,104 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vastavik.computer.ui.theme.VastavikColors
-import com.vastavik.computer.ui.theme.neoShape
-import com.vastavik.computer.ui.theme.neoCircleShape
+import com.vastavik.computer.ui.components.VastavikTopBar
 
-@OptIn(ExperimentalMaterial3Api::class)
+private val DarkBg = Color(0xFF0F172A)
+private val DarkCard = Color(0xFF1E293B)
+private val DarkBorder = Color(0xFF334155)
+private val DarkText = Color(0xFFF8FAFC)
+private val DarkMuted = Color(0xFF94A3B8)
+
 @Composable
 fun PracticeScreen(onNavigate: (String) -> Unit) {
-    var selectedTab by remember { mutableIntStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(1) } // Default to Coding tab (index 1)
     val tabs = listOf("MCQs", "Coding", "PYQs")
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Practice") },
-                actions = {
-                    IconButton(onClick = { onNavigate("profile") }) {
-                        Icon(Icons.Filled.Person, contentDescription = "Profile", tint = MaterialTheme.colorScheme.primary)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = DarkBg
     ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            TabRow(
-                selectedTabIndex = selectedTab,
-                containerColor = MaterialTheme.colorScheme.background,
-                contentColor = MaterialTheme.colorScheme.primary,
-                indicator = { tabPositions ->
-                    if (selectedTab < tabPositions.size) {
-                        TabRowDefaults.SecondaryIndicator(
-                            modifier = Modifier.padding(start = tabPositions[selectedTab].left),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
+            // Top bar
+            VastavikTopBar(onProfileClick = { onNavigate("profile") })
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(DarkBg)
+                    .padding(horizontal = 16.dp)
             ) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
-                        text = {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Practice",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = DarkText
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Pill tabs
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(DarkCard)
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        val isSelected = selectedTab == index
+                        Surface(
+                            onClick = { selectedTab = index },
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isSelected) Color.White else Color.Transparent
+                        ) {
                             Text(
-                                title,
-                                fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal
+                                text = title,
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (isSelected) DarkBg else DarkMuted
                             )
                         }
-                    )
+                    }
                 }
-            }
 
-            when (selectedTab) {
-                0 -> MCQTab(onNavigate = onNavigate)
-                1 -> CodingTab(onNavigate = onNavigate)
-                2 -> PYQTab(onNavigate = onNavigate)
+                Spacer(modifier = Modifier.height(16.dp))
+
+                when (selectedTab) {
+                    0 -> MCQTab(onNavigate = onNavigate)
+                    1 -> CodingTab(onNavigate = onNavigate)
+                    2 -> PYQTab(onNavigate = onNavigate)
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MCQTab(onNavigate: (String) -> Unit) {
-    var showConfigSheet by remember { mutableStateOf(false) }
-    var selectedTopic by remember { mutableStateOf("") }
-
     val quizzes = listOf(
-        Pair("OOP Fundamentals", "Core Concepts"),
-        Pair("Java Collections", "Data Structures"),
-        Pair("Exception Handling", "Error Management"),
-        Pair("Multithreading", "Concurrency")
+        Triple("OOP Concepts", "10 questions", Icons.Filled.Quiz),
+        Triple("Arrays & Lists", "15 questions", Icons.Filled.Quiz),
+        Triple("Sorting", "12 questions", Icons.Filled.Quiz),
+        Triple("File Handling", "8 questions", Icons.Filled.Quiz)
     )
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(quizzes) { (title, subtitle) ->
+        items(quizzes) { (title, sub, icon) ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { 
-                        selectedTopic = title
-                        showConfigSheet = true 
-                    },
-                shape = neoShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    .clickable { onNavigate("quiz_setup/$title") },
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder)
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp),
@@ -116,88 +123,30 @@ private fun MCQTab(onNavigate: (String) -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .clip(neoShape(12.dp))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            Icons.Filled.Quiz,
+                            icon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(14.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(subtitle, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = DarkText)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(sub, fontSize = 12.sp, color = DarkMuted)
                     }
                     Icon(
                         Icons.Filled.ChevronRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = DarkMuted,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-            }
-        }
-    }
-
-    if (showConfigSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showConfigSheet = false },
-            containerColor = MaterialTheme.colorScheme.surface
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
-                Text(
-                    text = "Configure Quiz",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Topic: $selectedTopic",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Text("Select number of questions:", fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                val counts = listOf(10, 20, 30)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    counts.forEach { count ->
-                        Surface(
-                            onClick = {
-                                showConfigSheet = false
-                                onNavigate("quiz_setup/$selectedTopic")
-                            },
-                            modifier = Modifier.weight(1f),
-                            shape = neoShape(12.dp),
-                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                        ) {
-                            Box(
-                                modifier = Modifier.padding(vertical = 16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "$count",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
@@ -206,21 +155,23 @@ private fun MCQTab(onNavigate: (String) -> Unit) {
 @Composable
 private fun CodingTab(onNavigate: (String) -> Unit) {
     val challenges = listOf(
-        Triple("Reverse a String", "Easy", "String manipulation"),
-        Triple("Binary Search", "Medium", "Search algorithms"),
-        Triple("Merge Sort", "Hard", "Sorting algorithms")
+        Triple("Reverse a String", "Easy", "Strings"),
+        Triple("Two Sum", "Medium", "Arrays"),
+        Triple("Merge Intervals", "Hard", "Intervals")
     )
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(challenges) { (title, difficulty, topic) ->
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = neoShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigate("code_editor") },
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -228,29 +179,30 @@ private fun CodingTab(onNavigate: (String) -> Unit) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = DarkText)
                         Surface(
-                            shape = neoShape(8.dp),
+                            shape = RoundedCornerShape(50.dp),
                             color = when (difficulty) {
-                                "Easy" -> MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
-                                "Medium" -> VastavikColors.LightWarning.copy(alpha = 0.1f)
-                                else -> MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
+                                "Easy" -> Color(0xFF065F46).copy(alpha = 0.5f)
+                                "Medium" -> Color(0xFF92400E).copy(alpha = 0.5f)
+                                else -> Color(0xFF991B1B).copy(alpha = 0.5f)
                             }
                         ) {
                             Text(
                                 text = difficulty,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                 fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
                                 color = when (difficulty) {
-                                    "Easy" -> MaterialTheme.colorScheme.tertiary
-                                    "Medium" -> VastavikColors.LightWarning
-                                    else -> MaterialTheme.colorScheme.error
+                                    "Easy" -> Color(0xFF34D399)
+                                    "Medium" -> Color(0xFFFBBF24)
+                                    else -> Color(0xFFF87171)
                                 }
                             )
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(topic, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(topic, fontSize = 12.sp, color = DarkMuted)
                 }
             }
         }
@@ -260,23 +212,23 @@ private fun CodingTab(onNavigate: (String) -> Unit) {
 @Composable
 private fun PYQTab(onNavigate: (String) -> Unit) {
     val pyqs = listOf(
-        Triple("ICSE 2023", "Computer Science", "45 questions"),
-        Triple("CBSE 2022", "Computer Science", "50 questions"),
-        Triple("ICSE 2022", "Computer Applications", "40 questions")
+        Triple("ICSE 2023", "45 questions", Icons.Filled.Article),
+        Triple("CBSE 2022", "50 questions", Icons.Filled.Article),
+        Triple("ICSE 2022", "40 questions", Icons.Filled.Article)
     )
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(pyqs) { (title, subject, questions) ->
+        items(pyqs) { (title, questions, icon) ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onNavigate("pyq") },
-                shape = neoShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                border = androidx.compose.foundation.BorderStroke(1.dp, DarkBorder)
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp),
@@ -285,26 +237,28 @@ private fun PYQTab(onNavigate: (String) -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .clip(neoShape(12.dp))
-                            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)),
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            Icons.Filled.Article,
+                            icon,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.secondary
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(14.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text("$subject \u2022 $questions", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(title, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = DarkText)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(questions, fontSize = 12.sp, color = DarkMuted)
                     }
                     Icon(
                         Icons.Filled.ChevronRight,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = DarkMuted,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
