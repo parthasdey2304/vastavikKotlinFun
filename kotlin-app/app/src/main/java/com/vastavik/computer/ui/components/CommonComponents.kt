@@ -50,22 +50,26 @@ fun VastavikCard(
     elevation: Int = 4,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Card(
-        modifier = modifier
-            .shadow(
-                elevation = elevation.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = VastavikColors.LightShadow
-            )
-            .then(
-                if (onClick != null) Modifier.clickable { onClick() } else Modifier
-            ),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+    val shape = RoundedCornerShape(16.dp)
+    Box(modifier = modifier.padding(end = 5.dp, bottom = 5.dp)) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .offset(x = 5.dp, y = 5.dp)
+                .clip(shape)
+                .background(Color.Black)
         )
-    ) {
-        Column(modifier = Modifier.padding(16.dp), content = content)
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
+            shape = shape,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = androidx.compose.foundation.BorderStroke(2.dp, Color.Black),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp), content = content)
+        }
     }
 }
 

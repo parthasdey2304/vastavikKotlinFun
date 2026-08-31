@@ -1,6 +1,8 @@
 package com.vastavik.computer.ui.screens.chat
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.widthIn
@@ -23,6 +25,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.buildAnnotatedString
@@ -117,29 +120,31 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        // Top bar
-        VastavikTopBar(onProfileClick = { onNavigate("profile") })
-
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Header row
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .imePadding()
+        ) {
+            // Top bar with "Vastavik AI Mistral Small" + New button
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Filled.SmartToy, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
                 Spacer(Modifier.width(8.dp))
-                Text("Vastavik AI", fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                Text("Vastavik", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                Text("AI", color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
                 Spacer(Modifier.width(8.dp))
                 Surface(
                     shape = RoundedCornerShape(50.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    border = BorderStroke(1.dp, Color.Black)
                 ) {
                     Text(
                         "Mistral Small",
@@ -150,13 +155,20 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "+ New",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { viewModel.clearMessages() }
-                )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                        .border(BorderStroke(1.5.dp, Color.Black), RoundedCornerShape(12.dp))
+                        .clickable { viewModel.clearMessages() }
+                        .padding(horizontal = 14.dp, vertical = 8.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("New", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    }
+                }
             }
 
             // Suggestion chips
@@ -185,15 +197,16 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                             }
                         },
                         shape = RoundedCornerShape(50.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                        color = Color.White,
+                        border = BorderStroke(2.dp, Color.Black),
+                        shadowElevation = 0.dp
                     ) {
                         Text(
                             label,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
                             fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onBackground
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0F172A)
                         )
                     }
                 }
@@ -241,22 +254,23 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                 }
             }
 
-            // Input area
+            // Input area brutal - fixed at bottom with imePadding
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.surface,
-                shadowElevation = 8.dp
+                color = Color.White,
+                shadowElevation = 0.dp,
+                border = BorderStroke(2.dp, Color.Black)
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 10.dp)
+                        .padding(horizontal = 12.dp, vertical = 14.dp)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedTextField(
                         value = inputText,
                         onValueChange = { inputText = it },
-                        placeholder = { Text("Ask anything (Java/Python/JS/SQL)...", fontSize = 14.sp) },
+                        placeholder = { Text("Ask anything (Java/Python/JS/SQL)...", fontSize = 14.sp, color = Color(0xFF94A3B8)) },
                         modifier = Modifier
                             .weight(1f)
                             .heightIn(min = 48.dp, max = 120.dp),
@@ -264,8 +278,10 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                         singleLine = false,
                         maxLines = 5,
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                            focusedBorderColor = Color.Black,
+                            unfocusedBorderColor = Color.Black,
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White
                         )
                     )
                     Spacer(Modifier.width(8.dp))
@@ -310,7 +326,8 @@ private fun ChatBubbleRow(message: ChatMessage, onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
+                    .background(MaterialTheme.colorScheme.primary)
+                    .border(BorderStroke(1.5.dp, Color.Black), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(Icons.Filled.SmartToy, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
@@ -324,7 +341,9 @@ private fun ChatBubbleRow(message: ChatMessage, onNavigate: (String) -> Unit) {
                 bottomStart = if (message.isUser) 16.dp else 4.dp,
                 bottomEnd = if (message.isUser) 4.dp else 16.dp
             ),
-            color = if (message.isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+            color = if (message.isUser) Color(0xFF2563EB) else Color.White,
+            border = BorderStroke(1.8.dp, Color.Black),
+            shadowElevation = 0.dp,
             modifier = Modifier.widthIn(max = 280.dp)
         ) {
             if (message.isUser) {
@@ -345,7 +364,8 @@ private fun ChatBubbleRow(message: ChatMessage, onNavigate: (String) -> Unit) {
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onBackground),
+                    .background(Color(0xFF0F172A))
+                    .border(BorderStroke(1.5.dp, Color.Black), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(Icons.Filled.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
@@ -357,6 +377,16 @@ private fun ChatBubbleRow(message: ChatMessage, onNavigate: (String) -> Unit) {
 @Composable
 fun ParsedMarkdownText(text: String, modifier: Modifier = Modifier, onNavigate: ((String) -> Unit)? = null) {
     val parts = text.split("`")
+    val codeBlocks = mutableListOf<Pair<String, String>>()
+    parts.forEachIndexed { index, part ->
+        if (index % 2 == 1) {
+            val lines = part.trim().lines()
+            val lang = lines.firstOrNull()?.trim() ?: ""
+            val codeLines = if (lines.size > 1) lines.drop(1) else listOf()
+            val codeContent = codeLines.joinToString("\n")
+            if (codeContent.isNotBlank()) codeBlocks.add(lang to codeContent)
+        }
+    }
     Column(modifier = modifier) {
         parts.forEachIndexed { index, part ->
             if (index % 2 == 1) {
@@ -364,30 +394,27 @@ fun ParsedMarkdownText(text: String, modifier: Modifier = Modifier, onNavigate: 
                 val language = lines.firstOrNull()?.trim() ?: ""
                 val codeLines = if (lines.size > 1) lines.drop(1) else listOf()
                 val codeContent = codeLines.joinToString("\n")
-                if (onNavigate != null && codeContent.isNotBlank()) {
+                val isFirstCode = codeBlocks.isNotEmpty() && codeContent == codeBlocks.first().second
+                if (onNavigate != null && codeContent.isNotBlank() && isFirstCode) {
+                    val allCode = codeBlocks.joinToString("\n\n") { it.second }
+                    val label = if (codeBlocks.size == 1) (language.ifEmpty { "code" }) else "${codeBlocks.size} code snippets"
                     Surface(
                         onClick = {
-                            val encoded = Uri.encode(codeContent, "UTF-8")
+                            val encoded = Uri.encode(allCode, "UTF-8")
                             onNavigate("code_editor?initialCode=$encoded&language=$language")
                         },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                            .padding(vertical = 4.dp)
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Filled.OpenInFull, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Column {
-                                Text("Open in Editor", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                                if (language.isNotEmpty()) {
-                                    Text(language, color = Color.White.copy(alpha = 0.7f), fontSize = 10.sp)
-                                }
-                            }
+                            Icon(Icons.Filled.OpenInFull, contentDescription = null, tint = Color.White, modifier = Modifier.size(12.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text(label, color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 } else if (codeContent.isNotBlank()) {
@@ -416,7 +443,7 @@ fun ParsedMarkdownText(text: String, modifier: Modifier = Modifier, onNavigate: 
                                             .padding(end = 8.dp)
                                     )
                                     Text(
-                                        text = highlightCode(if (line.isEmpty()) " " else line),
+                                        text = highlightCode(if (line.isEmpty()) " " else line, language),
                                         color = Color(0xFFD4D4D4),
                                         fontFamily = FontFamily.Monospace,
                                         fontSize = 11.sp,
@@ -484,7 +511,7 @@ private fun parseInlineMarkdown(text: String, builder: androidx.compose.ui.text.
                 builder.withStyle(SpanStyle(background = Color(0x22888888), fontFamily = FontFamily.Monospace)) { append(match.groups[2]!!.value) }
             }
             match.groups[3] != null -> {
-                builder.withStyle(SpanStyle(fontStyle = androidx.compose.ui.text.font.FontStyle.Italic)) { append(match.groups[3]!!.value) }
+                builder.withStyle(SpanStyle(fontStyle = FontStyle.Italic)) { append(match.groups[3]!!.value) }
             }
         }
         currentIndex = match.range.last + 1
@@ -492,21 +519,83 @@ private fun parseInlineMarkdown(text: String, builder: androidx.compose.ui.text.
     builder.append(text.substring(currentIndex))
 }
 
-private fun highlightCode(code: String) = buildAnnotatedString {
-    val keywords = listOf("class", "fun", "public", "private", "protected", "override", "return", "val", "var", "import", "package", "if", "else", "for", "while", "true", "false", "null", "static", "void", "new", "Scanner", "System", "out", "print", "println", "String", "int", "args", "main")
-    val types = listOf("String", "Int", "Boolean", "Double", "Float", "Long")
-    val words = code.split(Regex("(?<=\\b|\\s)|(?=\\b|\\s)"))
-    for (word in words) {
-        when {
-            word in keywords -> {
-                withStyle(style = SpanStyle(color = Color(0xFF569CD6))) { append(word) }
+private object ChatSyntaxColors {
+    val keyword = Color(0xFFC586C0)
+    val string = Color(0xFFCE9178)
+    val number = Color(0xFFB5CEA8)
+    val comment = Color(0xFF6A9955)
+    val function = Color(0xFFDCDCAA)
+    val type = Color(0xFF4EC9B0)
+    val operator = Color(0xFFD4D4D4)
+    val normal = Color(0xFFD4D4D4)
+    val punctuation = Color(0xFF808080)
+}
+
+private val javaKeywords = setOf("abstract","assert","boolean","break","byte","case","catch","char","class","const","continue","default","do","double","else","enum","extends","final","finally","float","for","goto","if","implements","import","instanceof","int","interface","long","native","new","package","private","protected","public","return","short","static","strictfp","super","switch","synchronized","this","throw","throws","transient","try","void","volatile","while","true","false","null","var","record","sealed","permits","yield","instanceof")
+private val pythonKeywords = setOf("and","as","assert","async","await","break","class","continue","def","del","elif","else","except","finally","for","from","global","if","import","in","is","lambda","nonlocal","not","or","pass","raise","return","try","while","with","yield","True","False","None","print","range","len","int","float","str","list","dict","set","tuple","input","open","type")
+private val jsKeywords = setOf("abstract","arguments","async","await","boolean","break","byte","case","catch","char","class","const","continue","debugger","default","delete","do","double","else","enum","export","extends","final","finally","float","for","function","goto","if","implements","import","in","instanceof","int","interface","let","long","native","new","of","package","private","protected","public","return","short","static","super","switch","synchronized","this","throw","throws","transient","try","typeof","undefined","var","void","volatile","while","with","yield","true","false","null","console","document","Math","JSON","Promise","Array","Object","String","Number","Boolean")
+private val sqlKeywords = setOf("SELECT","FROM","WHERE","INSERT","UPDATE","DELETE","CREATE","DROP","ALTER","TABLE","INDEX","VIEW","INTO","VALUES","SET","AND","OR","NOT","IN","LIKE","BETWEEN","JOIN","LEFT","RIGHT","INNER","OUTER","ON","AS","ORDER","BY","GROUP","HAVING","LIMIT","OFFSET","DISTINCT","COUNT","SUM","AVG","MIN","MAX","UNION","ALL","ANY","EXISTS","IS","NULL","PRIMARY","KEY","FOREIGN","REFERENCES","CONSTRAINT","CHECK","DEFAULT","AUTO_INCREMENT","VARCHAR","INT","INTEGER","TEXT","DATE","BOOLEAN").map { it.uppercase() }.toSet()
+
+private fun highlightCode(code: String, language: String) = buildAnnotatedString {
+    val keywords = when (language.lowercase()) {
+        "python" -> pythonKeywords
+        "javascript", "js" -> jsKeywords
+        "sql" -> sqlKeywords
+        else -> javaKeywords
+    }
+    val lang = language.uppercase()
+
+    var i = 0
+    while (i < code.length) {
+        if (code[i] == '/' && i + 1 < code.length && code[i + 1] == '/') {
+            val end = code.indexOf('\n', i).let { if (it == -1) code.length else it }
+            withStyle(SpanStyle(color = ChatSyntaxColors.comment, fontStyle = FontStyle.Italic)) { append(code.substring(i, end)) }
+            i = end
+        } else if (code[i] == '/' && i + 1 < code.length && code[i + 1] == '*') {
+            val end = code.indexOf("*/", i + 2).let { if (it == -1) code.length else it + 2 }
+            withStyle(SpanStyle(color = ChatSyntaxColors.comment, fontStyle = FontStyle.Italic)) { append(code.substring(i, end)) }
+            i = end
+        } else if (code[i] == '#' && lang == "PYTHON") {
+            val end = code.indexOf('\n', i).let { if (it == -1) code.length else it }
+            withStyle(SpanStyle(color = ChatSyntaxColors.comment, fontStyle = FontStyle.Italic)) { append(code.substring(i, end)) }
+            i = end
+        } else if (code[i] == '"' || code[i] == '\'') {
+            val quote = code[i]
+            var j = i + 1
+            while (j < code.length && code[j] != quote) {
+                if (code[j] == '\\') j++
+                j++
             }
-            word in types -> {
-                withStyle(style = SpanStyle(color = Color(0xFF4EC9B0))) { append(word) }
+            j = minOf(j + 1, code.length)
+            withStyle(SpanStyle(color = ChatSyntaxColors.string)) { append(code.substring(i, j)) }
+            i = j
+        } else if (code[i].isDigit() && (i == 0 || !code[i - 1].isLetter())) {
+            var j = i
+            while (j < code.length && (code[j].isDigit() || code[j] == '.')) j++
+            withStyle(SpanStyle(color = ChatSyntaxColors.number)) { append(code.substring(i, j)) }
+            i = j
+        } else if (code[i].isLetter() || code[i] == '_') {
+            var j = i
+            while (j < code.length && (code[j].isLetterOrDigit() || code[j] == '_')) j++
+            val word = code.substring(i, j)
+            val wordForLookup = if (language.lowercase() == "sql") word.uppercase() else word.lowercase()
+            when {
+                wordForLookup in keywords -> withStyle(SpanStyle(color = ChatSyntaxColors.keyword, fontWeight = FontWeight.Bold)) { append(word) }
+                word[0].isUpperCase() && j < code.length && code[j] == '(' -> withStyle(SpanStyle(color = ChatSyntaxColors.function)) { append(word) }
+                word[0].isUpperCase() -> withStyle(SpanStyle(color = ChatSyntaxColors.type)) { append(word) }
+                j < code.length && code[j] == '(' -> withStyle(SpanStyle(color = ChatSyntaxColors.function)) { append(word) }
+                else -> withStyle(SpanStyle(color = ChatSyntaxColors.normal)) { append(word) }
             }
-            else -> {
-                append(word)
-            }
+            i = j
+        } else if (code[i] in "+-*/%=!<>&|^~?:.") {
+            withStyle(SpanStyle(color = ChatSyntaxColors.operator)) { append(code[i]) }
+            i++
+        } else if (code[i] in "(){}[];,") {
+            withStyle(SpanStyle(color = ChatSyntaxColors.punctuation)) { append(code[i]) }
+            i++
+        } else {
+            append(code[i])
+            i++
         }
     }
 }

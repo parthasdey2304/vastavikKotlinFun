@@ -1,6 +1,8 @@
 package com.vastavik.computer.ui.screens.profile
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,12 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vastavik.computer.ui.theme.neoShape
-import com.vastavik.computer.ui.theme.neoCircleShape
+import com.vastavik.computer.ui.theme.BrutalCard
 
 @Composable
 fun ProfileScreen(onNavigate: (String) -> Unit) {
@@ -33,219 +33,241 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                 .fillMaxSize(),
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
-            // Profile Header with gradient bg
+            // Profile Header Brutal Card
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(Color(0xFF4F46E5), Color(0xFF7C3AED), Color(0xFF06B6D4))
-                            )
-                        )
-                ) {
-                    Box {
-                        // Decorative blur circles
-                        Box(
-                            modifier = Modifier
-                                .size(100.dp)
-                                .offset(x = 200.dp, y = (-20).dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.1f))
-                        )
-                        Box(
-                            modifier = Modifier
-                                .size(80.dp)
-                                .offset(x = (-30).dp, y = 80.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.1f))
-                        )
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier.height(20.dp))
-                            // Avatar
-                            Box(
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .background(Color.White)
-                                    .padding(4.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        Icons.Filled.Person,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(40.dp)
-                                    )
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = "Student",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = "student@example.com",
-                                fontSize = 13.sp,
-                                color = Color.White.copy(alpha = 0.7f)
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Stats row
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                // Day streak
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(Color(0xFFFFF7ED))
-                                        .padding(12.dp)
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(36.dp)
-                                                .clip(RoundedCornerShape(10.dp))
-                                                .background(Color.White),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text("\uD83D\uDD25", fontSize = 18.sp)
-                                        }
-                                        Spacer(modifier = Modifier.width(10.dp))
-                                        Column {
-                                            Text("7 days", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF1E293B), lineHeight = 18.sp)
-                                            Text("Day streak", fontSize = 11.sp, color = Color(0xFF64748B), lineHeight = 14.sp)
-                                        }
-                                    }
-                                }
-                                // Lessons done
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(Color(0xFFEEF2FF))
-                                        .padding(12.dp)
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(36.dp)
-                                                .clip(RoundedCornerShape(10.dp))
-                                                .background(Color.White),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text("\uD83D\uDCDA", fontSize = 18.sp)
-                                        }
-                                        Spacer(modifier = Modifier.width(10.dp))
-                                        Column {
-                                            Text("24", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF1E293B), lineHeight = 18.sp)
-                                            Text("Lessons done", fontSize = 11.sp, color = Color(0xFF64748B), lineHeight = 14.sp)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            item { Spacer(modifier = Modifier.height(16.dp)) }
-
-            // Premium card
-            item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clickable { onNavigate("payment") },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-                ) {
+                Box(modifier = Modifier.padding(horizontal = 16.dp).padding(end = 5.dp, bottom = 5.dp)) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Brush.linearGradient(
-                                    colors = listOf(Color(0xFF0F172A), Color(0xFF334155))
-                                )
-                            )
-                            .padding(16.dp)
+                            .matchParentSize()
+                            .offset(x = 5.dp, y = 5.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(Color.Black)
+                    )
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                        border = BorderStroke(2.dp, Color.Black),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(Color(0xFF4F46E5), Color(0xFF7C3AED), Color(0xFF06B6D4))
+                                    )
+                                )
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(
-                                        Brush.linearGradient(
-                                            colors = listOf(Color(0xFFFBBF24), Color(0xFFF97316))
-                                        )
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("\u2605", color = Color.White, fontSize = 22.sp)
-                            }
-                            Spacer(modifier = Modifier.width(14.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    "Upgrade to Premium",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 15.sp
+                            Box {
+                                Box(
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .offset(x = 200.dp, y = (-20).dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White.copy(alpha = 0.08f))
                                 )
-                                Text(
-                                    "Unlock all lessons + AI chat",
-                                    color = Color.White.copy(alpha = 0.6f),
-                                    fontSize = 12.sp
+                                Box(
+                                    modifier = Modifier
+                                        .size(80.dp)
+                                        .offset(x = (-30).dp, y = 80.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White.copy(alpha = 0.08f))
                                 )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("\u2192", color = Color(0xFF0F172A), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    // Avatar with brutal border
+                                    Box(
+                                        modifier = Modifier
+                                            .size(84.dp)
+                                            .clip(RoundedCornerShape(20.dp))
+                                            .background(Color.White)
+                                            .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(20.dp))
+                                            .padding(4.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .background(Color(0xFFF1F5F9)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                Icons.Filled.Person,
+                                                contentDescription = null,
+                                                tint = Color(0xFF64748B),
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = "Student",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = "student@example.com",
+                                        fontSize = 13.sp,
+                                        color = Color.White.copy(alpha = 0.8f)
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .background(Color.White)
+                                                .border(BorderStroke(1.5.dp, Color.Black), RoundedCornerShape(16.dp))
+                                                .padding(12.dp)
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(36.dp)
+                                                        .clip(RoundedCornerShape(10.dp))
+                                                        .background(Color(0xFFFFF7ED))
+                                                        .border(BorderStroke(1.dp, Color.Black.copy(alpha = 0.08f)), RoundedCornerShape(10.dp)),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text("🔥", fontSize = 18.sp)
+                                                }
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                Column {
+                                                    Text("7 days", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.colorScheme.onBackground, lineHeight = 18.sp)
+                                                    Text("Day streak", fontSize = 11.sp, color = Color(0xFF64748B), lineHeight = 14.sp)
+                                                }
+                                            }
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clip(RoundedCornerShape(16.dp))
+                                                .background(Color.White)
+                                                .border(BorderStroke(1.5.dp, Color.Black), RoundedCornerShape(16.dp))
+                                                .padding(12.dp)
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(36.dp)
+                                                        .clip(RoundedCornerShape(10.dp))
+                                                        .background(Color(0xFFEEF2FF))
+                                                        .border(BorderStroke(1.dp, Color.Black.copy(alpha = 0.08f)), RoundedCornerShape(10.dp)),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text("📚", fontSize = 18.sp)
+                                                }
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                Column {
+                                                    Text("24", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.colorScheme.onBackground, lineHeight = 18.sp)
+                                                    Text("Lessons done", fontSize = 11.sp, color = Color(0xFF64748B), lineHeight = 14.sp)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
 
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(18.dp)) }
 
-            // Menu items
+            // Premium card brutal
             item {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                Box(modifier = Modifier.padding(horizontal = 16.dp).padding(end = 5.dp, bottom = 5.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .offset(x = 5.dp, y = 5.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color.Black)
+                    )
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onNavigate("payment") },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                        border = BorderStroke(2.dp, Color.Black),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(Color(0xFF0F172A), Color(0xFF1E293B))
+                                    )
+                                )
+                                .padding(16.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(
+                                            Brush.linearGradient(
+                                                colors = listOf(Color(0xFFFBBF24), Color(0xFFF97316))
+                                            )
+                                        )
+                                        .border(BorderStroke(1.5.dp, Color.Black), RoundedCornerShape(12.dp)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("★", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                                }
+                                Spacer(modifier = Modifier.width(14.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        "Upgrade to Premium",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 15.sp
+                                    )
+                                    Text(
+                                        "Unlock all lessons + AI chat",
+                                        color = Color.White.copy(alpha = 0.65f),
+                                        fontSize = 12.sp
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .size(34.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White)
+                                        .border(BorderStroke(1.5.dp, Color.Black), CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("→", color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(18.dp)) }
+
+            // Menu items brutal
+            item {
+                BrutalCard(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    backgroundColor = Color.White
                 ) {
                     Column {
                         val menuItems = listOf(
@@ -273,13 +295,14 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                                         modifier = Modifier
                                             .size(36.dp)
                                             .clip(RoundedCornerShape(10.dp))
-                                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                                            .background(Color(0xFFF8FAFC))
+                                            .border(BorderStroke(1.5.dp, Color.Black), RoundedCornerShape(10.dp)),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
                                             icon,
                                             contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            tint = Color(0xFF0F172A),
                                             modifier = Modifier.size(18.dp)
                                         )
                                     }
@@ -287,36 +310,35 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                                     Column(modifier = Modifier.weight(1f)) {
                                         Text(
                                             title,
-                                            fontWeight = FontWeight.Medium,
+                                            fontWeight = FontWeight.SemiBold,
                                             fontSize = 14.sp,
                                             color = MaterialTheme.colorScheme.onBackground
                                         )
                                         Text(
                                             desc,
                                             fontSize = 11.sp,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            color = Color(0xFF64748B)
                                         )
                                     }
                                     Icon(
                                         Icons.Filled.ChevronRight,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        tint = Color(0xFF94A3B8),
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
                                 if (index < menuItems.lastIndex) {
                                     HorizontalDivider(
                                         modifier = Modifier.padding(horizontal = 16.dp),
-                                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+                                        color = Color(0xFFE2E8F0)
                                     )
                                 }
                             }
                         }
 
-                        // Logout
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+                            color = Color(0xFFE2E8F0)
                         )
                         Row(
                             modifier = Modifier
@@ -329,7 +351,8 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(Color(0xFFFEF2F2)),
+                                    .background(Color(0xFFFEF2F2))
+                                    .border(BorderStroke(1.5.dp, Color.Black), RoundedCornerShape(10.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
@@ -343,14 +366,14 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                             Text(
                                 "Log Out",
                                 modifier = Modifier.weight(1f),
-                                fontWeight = FontWeight.Medium,
+                                fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp,
                                 color = Color(0xFFEF4444)
                             )
                             Icon(
                                 Icons.Filled.ChevronRight,
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                tint = Color(0xFF94A3B8),
                                 modifier = Modifier.size(18.dp)
                             )
                         }

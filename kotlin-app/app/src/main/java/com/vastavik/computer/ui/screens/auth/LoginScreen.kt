@@ -1,10 +1,12 @@
 package com.vastavik.computer.ui.screens.auth
 
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -13,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -23,19 +26,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.vastavik.computer.ui.theme.VastavikColors
 
-/*
- * GOOGLE SIGN-IN CODE - COMMENTED OUT TEMPORARILY
- * Uncomment when Firebase web client ID is configured in Firebase Console.
- * Go to: Firebase Console > Authentication > Sign-in method > Google > Web SDK configuration
- * Then add the web client ID below where indicated.
- */
-/*
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-*/
+private val BgWhite = Color(0xFFF8FAFC)
+private val TextDark = Color(0xFF0F172A)
+private val TextMuted = Color(0xFF64748B)
+private val PrimaryIndigo = Color(0xFF2563EB)
+private val BorderBlack = Color.Black
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,37 +45,6 @@ fun LoginScreen(
     var obscurePassword by remember { mutableStateOf(true) }
     val context = LocalContext.current
 
-    /*
-     * GOOGLE SIGN-IN CLIENT - COMMENTED OUT
-     * val googleSignInClient = remember {
-     *     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-     *         .requestIdToken("YOUR_WEB_CLIENT_ID_HERE")
-     *         .requestEmail()
-     *         .build()
-     *     GoogleSignIn.getClient(context, gso)
-     * }
-     *
-     * val googleSignInLauncher = rememberLauncherForActivityResult(
-     *     ActivityResultContracts.StartActivityForResult()
-     * ) { result ->
-     *     if (result.resultCode == android.app.Activity.RESULT_OK) {
-     *         val data = result.data
-     *         try {
-     *             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-     *             val account = task.getResult(ApiException::class.java)
-     *             val idToken = account?.idToken
-     *             if (idToken != null) {
-     *                 viewModel.signInWithGoogle(idToken)
-     *             } else {
-     *                 viewModel.signInWithGoogle("")
-     *             }
-     *         } catch (e: ApiException) {
-     *             viewModel.signInWithGoogle("")
-     *         }
-     *     }
-     * }
-     */
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
@@ -92,28 +57,45 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = Icons.Filled.LaptopChromebook,
-                contentDescription = null,
-                modifier = Modifier.size(80.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(24.dp))
+            Box(modifier = Modifier.padding(bottom = 20.dp)) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .offset(x = 5.dp, y = 5.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(BorderBlack)
+                )
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(PrimaryIndigo)
+                        .border(BorderStroke(2.dp, BorderBlack), RoundedCornerShape(16.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Filled.LaptopChromebook,
+                        contentDescription = null,
+                        modifier = Modifier.size(40.dp),
+                        tint = Color.White
+                    )
+                }
+            }
 
             Text(
                 text = "Welcome Back",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.ExtraBold,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = "Sign in to continue your learning journey",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 14.sp,
+                color = TextMuted,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             OutlinedTextField(
                 value = email,
@@ -121,10 +103,17 @@ fun LoginScreen(
                 label = { Text("Email") },
                 leadingIcon = { Icon(Icons.Filled.Email, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = BorderBlack,
+                    focusedBorderColor = BorderBlack,
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White
+                ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 singleLine = true
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             OutlinedTextField(
                 value = password,
@@ -141,6 +130,13 @@ fun LoginScreen(
                 },
                 visualTransformation = if (obscurePassword) PasswordVisualTransformation() else VisualTransformation.None,
                 modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = BorderBlack,
+                    focusedBorderColor = BorderBlack,
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White
+                ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true
             )
@@ -149,89 +145,61 @@ fun LoginScreen(
                 onClick = { onNavigate("forgot_password") },
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text("Forgot Password?")
+                Text("Forgot Password?", color = PrimaryIndigo, fontWeight = FontWeight.Bold)
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
-            Button(
-                onClick = {
-                    if (email.isNotBlank() && password.isNotBlank()) {
-                        viewModel.signIn(email.trim(), password.trim())
+            Box(modifier = Modifier.padding(end = 5.dp, bottom = 5.dp)) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .offset(x = 5.dp, y = 5.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(BorderBlack)
+                )
+                Button(
+                    onClick = {
+                        if (email.isNotBlank() && password.isNotBlank()) {
+                            viewModel.signIn(email.trim(), password.trim())
+                        } else {
+                            onNavigate("home")
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(BorderStroke(2.dp, BorderBlack), RoundedCornerShape(12.dp)),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryIndigo),
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                    enabled = !uiState.isLoading
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
                     } else {
-                        onNavigate("home")
+                        Text("Log In", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                enabled = !uiState.isLoading
-            ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text("Log In", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
             }
-            Spacer(modifier = Modifier.height(24.dp))
-
-            /*
-             * OR DIVIDER AND GOOGLE SIGN-IN BUTTON - COMMENTED OUT
-             * Uncomment when Google Sign-In is configured.
-             */
-            /*
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                HorizontalDivider(modifier = Modifier.weight(1f), color = Color.Gray.copy(alpha = 0.3f))
-                Text(
-                    "OR",
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray
-                )
-                HorizontalDivider(modifier = Modifier.weight(1f), color = Color.Gray.copy(alpha = 0.3f))
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-
-            OutlinedButton(
-                onClick = {
-                    val signInIntent = googleSignInClient.signInIntent
-                    googleSignInLauncher.launch(signInIntent)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Continue with Google")
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            */
+            Spacer(modifier = Modifier.height(28.dp))
 
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    "Don't have an account?",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Text("Don't have an account?", color = TextMuted, fontSize = 14.sp)
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     "Sign Up",
-                    color = MaterialTheme.colorScheme.primary,
+                    color = PrimaryIndigo,
                     fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
                     modifier = Modifier.clickable { onNavigate("signup") }
                 )
             }
@@ -240,11 +208,7 @@ fun LoginScreen(
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let { error ->
-            android.widget.Toast.makeText(
-                context,
-                error,
-                android.widget.Toast.LENGTH_LONG
-            ).show()
+            android.widget.Toast.makeText(context, error, android.widget.Toast.LENGTH_LONG).show()
             viewModel.clearError()
         }
     }

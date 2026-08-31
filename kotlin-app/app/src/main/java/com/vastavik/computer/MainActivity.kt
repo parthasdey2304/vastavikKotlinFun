@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val isDarkMode by themePreferences.isDarkMode.collectAsState(initial = false)
-            val isNeo by themePreferences.isNeoBrutalish.collectAsState(initial = false)
+            val isNeo by themePreferences.isNeoBrutalish.collectAsState(initial = true)
             val neoAccentIndex by themePreferences.neoBrutalAccentIndex.collectAsState(initial = 0)
             VastavikTheme(darkTheme = isDarkMode, neoBrutalish = isNeo, neoBrutalAccentIndex = neoAccentIndex) {
                 val navController = rememberNavController()

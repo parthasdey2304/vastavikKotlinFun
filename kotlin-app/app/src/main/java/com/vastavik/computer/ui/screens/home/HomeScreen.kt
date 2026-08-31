@@ -1,17 +1,16 @@
 package com.vastavik.computer.ui.screens.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,14 +18,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vastavik.computer.ui.components.VastavikTopBar
 import com.vastavik.computer.ui.components.PromoPopup
 import com.vastavik.computer.ui.components.PromoData
-import com.vastavik.computer.ui.theme.neoShape
+import com.vastavik.computer.ui.theme.BrutalBoxCard
+import com.vastavik.computer.ui.theme.BrutalCard
+import com.vastavik.computer.ui.theme.BrutalDefaults
 
 private var promoShown = false
 
@@ -93,134 +93,145 @@ private fun HomeTab(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
-        // Top Bar
         item {
             VastavikTopBar(onProfileClick = { onNavigate("profile") })
         }
 
-        // Hero Section
+        // Hero Brutal Card with integrated stats footer
         item {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(0xFF4F46E5), Color(0xFF7C3AED), Color(0xFF06B6D4))
-                        )
-                    )
-            ) {
-                Box {
-                    // Decorative blur circles
-                    Box(
-                        modifier = Modifier
-                            .size(140.dp)
-                            .offset(x = 100.dp, y = (-40).dp)
-                            .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.1f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(100.dp)
-                            .offset(x = (-20).dp, y = 80.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF06B6D4).copy(alpha = 0.2f))
-                    )
-
-                    Column(
-                        modifier = Modifier.padding(20.dp)
-                    ) {
-                        Text(
-                            text = "WELCOME BACK",
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color.White.copy(alpha = 0.8f),
-                            letterSpacing = 1.5.sp
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Hello, Student \uD83D\uDC4B",
-                            fontSize = 26.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color.White
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Ready to write some code? Pick up where you left off.",
-                            fontSize = 13.sp,
-                            color = Color.White.copy(alpha = 0.9f),
-                            maxLines = 2
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Search bar
+            Box(modifier = Modifier.padding(horizontal = 16.dp).padding(end = 5.dp, bottom = 5.dp)) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .offset(x = 5.dp, y = 5.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color.Black)
+                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    border = BorderStroke(2.dp, Color.Black),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column {
+                        // Gradient top
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(50.dp))
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(Color(0xFF2563EB), Color(0xFF7C3AED), Color(0xFF06B6D4))
+                                    )
+                                )
+                        ) {
+                            Box {
+                                Box(
+                                    modifier = Modifier
+                                        .size(140.dp)
+                                        .offset(x = 100.dp, y = (-40).dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White.copy(alpha = 0.08f))
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .offset(x = (-20).dp, y = 80.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.White.copy(alpha = 0.08f))
+                                )
+                                Column(modifier = Modifier.padding(20.dp)) {
+                                    Text(
+                                        text = "WELCOME BACK",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White.copy(alpha = 0.85f),
+                                        letterSpacing = 1.4.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = "Hello, Student \uD83D\uDC4B",
+                                        fontSize = 26.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = "Ready to write some code? Pick up where you left off.",
+                                        fontSize = 13.sp,
+                                        color = Color.White.copy(alpha = 0.9f),
+                                        lineHeight = 18.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(18.dp))
+                                    // Search pill
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(50.dp))
+                                            .background(Color.White)
+                                            .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(50.dp))
+                                            .clickable { onNavigate("search") }
+                                            .padding(horizontal = 16.dp, vertical = 14.dp)
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                Icons.Filled.Search,
+                                                contentDescription = null,
+                                                tint = Color(0xFF94A3B8),
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            Text(
+                                                text = if (searchQuery.isEmpty()) "Search courses, topics, lessons..." else searchQuery,
+                                                fontSize = 13.sp,
+                                                color = if (searchQuery.isEmpty()) Color(0xFF94A3B8) else Color(0xFF1E293B),
+                                                fontWeight = FontWeight.Medium
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Stats footer white strip
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .background(Color.White)
-                                .clickable { onNavigate("search") }
-                                .padding(horizontal = 16.dp, vertical = 14.dp)
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    Icons.Filled.Search,
-                                    contentDescription = null,
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(20.dp)
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .clip(CircleShape)
+                                        .background(Color(0xFF10B981))
                                 )
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = if (searchQuery.isEmpty()) "Search courses, topics, lessons\u2026" else searchQuery,
-                                    fontSize = 14.sp,
-                                    color = if (searchQuery.isEmpty()) Color.Gray else Color.DarkGray
+                                    text = "7 day streak",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                Text(
+                                    text = "  |  ",
+                                    fontSize = 13.sp,
+                                    color = Color(0xFFCBD5E1)
+                                )
+                                Text(
+                                    text = "65% avg progress",
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
                         }
                     }
                 }
             }
-
-            // Stats bar
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFF10B981))
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "7 day streak",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = "  |  ",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                    Text(
-                        text = "65% avg progress",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
         }
 
-        item { Spacer(modifier = Modifier.height(20.dp)) }
+        item { Spacer(modifier = Modifier.height(22.dp)) }
 
         // Continue Learning
         item {
@@ -233,15 +244,15 @@ private fun HomeTab(
             ) {
                 Text(
                     text = "Continue Learning",
-                    fontSize = 17.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "View all \u2192",
-                    fontSize = 12.sp,
+                    text = "View all →",
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color(0xFF2563EB),
                     modifier = Modifier.clickable { onNavigate("learning_path") }
                 )
             }
@@ -262,15 +273,15 @@ private fun HomeTab(
             ) {
                 Text(
                     text = "Course Catalog",
-                    fontSize = 17.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "Browse all \u2192",
-                    fontSize = 12.sp,
+                    text = "Browse all →",
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color(0xFF2563EB),
                     modifier = Modifier.clickable { onNavigate("learning_path") }
                 )
             }
@@ -282,36 +293,40 @@ private fun HomeTab(
 
         // Stats section
         item {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                contentAlignment = Alignment.Center
             ) {
-                StatsCard(
-                    modifier = Modifier.weight(1f),
-                    icon = "\u25D0",
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                StatsBrutalCard(
+                    modifier = Modifier.width(100.dp),
+                    icon = "◐",
                     value = "12.4k",
                     label = "Active learners",
                     iconBg = Color(0xFFEEF2FF),
                     iconTint = Color(0xFF6366F1)
                 )
-                StatsCard(
-                    modifier = Modifier.weight(1f),
-                    icon = "\u2713",
+                StatsBrutalCard(
+                    modifier = Modifier.width(100.dp),
+                    icon = "✓",
                     value = "500+",
                     label = "Hands-on lessons",
                     iconBg = Color(0xFFECFDF5),
                     iconTint = Color(0xFF10B981)
                 )
-                StatsCard(
-                    modifier = Modifier.weight(1f),
-                    icon = "\u2726",
+                StatsBrutalCard(
+                    modifier = Modifier.width(100.dp),
+                    icon = "✦",
                     value = "4.8/5",
                     label = "Avg rating",
                     iconBg = Color(0xFFFFFBE6),
                     iconTint = Color(0xFFF59E0B)
                 )
+                }
             }
         }
 
@@ -328,7 +343,7 @@ private fun HomeTab(
             ) {
                 Text(
                     text = "Popular Topics",
-                    fontSize = 17.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -337,7 +352,7 @@ private fun HomeTab(
             val topics = listOf("OOP Concepts", "Arrays & Lists", "Sorting Algorithms", "File Handling")
             topics.forEach { topic ->
                 PopularTopicItem(title = topic, subject = "CS", duration = "15 min")
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
 
@@ -347,113 +362,127 @@ private fun HomeTab(
 
 @Composable
 private fun ContinueLearningCard(onNavigate: (String) -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clickable { onNavigate("video_lesson/1/1/1/1") },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-    ) {
+    Box(modifier = Modifier.padding(horizontal = 16.dp).padding(end = 5.dp, bottom = 5.dp)) {
         Box(
             modifier = Modifier
+                .matchParentSize()
+                .offset(x = 5.dp, y = 5.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color.Black)
+        )
+        Card(
+            modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(Color(0xFF0F172A), Color(0xFF334155))
-                    )
-                )
-                .padding(20.dp)
+                .clickable { onNavigate("video_lesson/1/1/1/1") },
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            border = BorderStroke(2.dp, Color.Black),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White.copy(alpha = 0.1f))
-                            .then(Modifier.padding(2.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("</>", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = "Java Programming",
-                        color = Color.White,
-                        fontWeight = FontWeight.Semi,
-                        fontSize = 14.sp
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Surface(
-                        shape = RoundedCornerShape(50.dp),
-                        color = Color.White.copy(alpha = 0.15f)
-                    ) {
-                        Text(
-                            text = "In progress",
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                            color = Color.White,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(Color(0xFF0F172A), Color(0xFF1E293B), Color(0xFF0F172A))
                         )
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Object-Oriented Programming \u2014 OOP Concepts",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    lineHeight = 22.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Lesson 6 of 12 \u2022 18 min",
-                    fontSize = 12.sp,
-                    color = Color.White.copy(alpha = 0.6f)
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Progress bar
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(Color.White.copy(alpha = 0.15f))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.65f)
-                            .fillMaxHeight()
-                            .clip(RoundedCornerShape(3.dp))
-                            .background(Color.White)
                     )
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Progress 65%",
-                        fontSize = 12.sp,
-                        color = Color.White.copy(alpha = 0.7f)
-                    )
-                    Surface(
-                        onClick = { onNavigate("video_lesson/1/1/1/1") },
-                        shape = RoundedCornerShape(50.dp),
-                        color = Color.White
-                    ) {
+                    .padding(20.dp)
+            ) {
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color.White.copy(alpha = 0.1f))
+                                .border(BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)), RoundedCornerShape(12.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("</>", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
-                            text = "Continue \u2192",
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
-                            color = Color(0xFF0F172A),
-                            fontWeight = FontWeight.Bold,
+                            text = "Java Programming",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
                         )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(Color.White.copy(alpha = 0.14f))
+                                .border(BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)), RoundedCornerShape(50.dp))
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                        ) {
+                            Text(
+                                text = "In progress",
+                                color = Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Text(
+                        text = "Object-Oriented Programming — OOP Concepts",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        lineHeight = 24.sp
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = "Lesson 6 of 12 • 18 min",
+                        fontSize = 12.sp,
+                        color = Color.White.copy(alpha = 0.6f),
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .background(Color.White.copy(alpha = 0.18f))
+                            .border(BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)), RoundedCornerShape(50.dp))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.65f)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(Color.White)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Progress 65%",
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontWeight = FontWeight.Medium
+                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(Color.White)
+                                .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(50.dp))
+                                .clickable { onNavigate("video_lesson/1/1/1/1") }
+                                .padding(horizontal = 20.dp, vertical = 10.dp)
+                        ) {
+                            Text(
+                                text = "Continue →",
+                                color = MaterialTheme.colorScheme.onBackground,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
                     }
                 }
             }
@@ -472,7 +501,6 @@ private fun CourseCatalogGrid(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Row 1
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -483,11 +511,16 @@ private fun CourseCatalogGrid(
                     title = title,
                     colors = colors,
                     lessons = lessons,
-                    onClick = { onNavigate("learning_path") }
+                    onClick = {
+                        if (title == "Java Programming") {
+                            onNavigate("learning_path")
+                        } else {
+                            onNavigate("coming_soon/${java.net.URLEncoder.encode(title, "UTF-8")}")
+                        }
+                    }
                 )
             }
         }
-        // Row 2
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -498,7 +531,13 @@ private fun CourseCatalogGrid(
                     title = title,
                     colors = colors,
                     lessons = lessons,
-                    onClick = { onNavigate("learning_path") }
+                    onClick = {
+                        if (title == "Java Programming") {
+                            onNavigate("learning_path")
+                        } else {
+                            onNavigate("coming_soon/${java.net.URLEncoder.encode(title, "UTF-8")}")
+                        }
+                    }
                 )
             }
         }
@@ -513,28 +552,26 @@ private fun CourseCatalogCard(
     lessons: String,
     onClick: () -> Unit
 ) {
-    Card(
-        modifier = modifier
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    BrutalCard(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colorScheme.surface,
+        onClick = onClick
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Box(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Brush.linearGradient(colors = listOf(colors.first, colors.second))),
+                    .background(Brush.linearGradient(colors = listOf(colors.first, colors.second)))
+                    .border(BorderStroke(1.5.dp, Color.Black), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     when (title) {
-                        "Java Programming" -> "\u2615"
-                        "Python Basics" -> "\uD83D\uDC0D"
-                        "Data Structures" -> "\u25C8"
+                        "Java Programming" -> "☕"
+                        "Python Basics" -> "🐍"
+                        "Data Structures" -> "◈"
                         else -> "</>"
                     },
                     color = Color.White,
@@ -556,19 +593,19 @@ private fun CourseCatalogCard(
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Text(
-                text = "Explore \u2192",
+                text = "Explore →",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
+                color = Color(0xFF2563EB)
             )
         }
     }
 }
 
 @Composable
-private fun StatsCard(
+private fun StatsBrutalCard(
     modifier: Modifier = Modifier,
     icon: String,
     value: String,
@@ -576,43 +613,41 @@ private fun StatsCard(
     iconBg: Color,
     iconTint: Color
 ) {
-    Card(
+    BrutalCard(
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colorScheme.surface
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(iconBg),
+                    .background(iconBg)
+                    .border(BorderStroke(1.5.dp, Color.Black.copy(alpha = 0.1f)), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(icon, fontSize = 16.sp, color = iconTint)
+                Text(icon, fontSize = 18.sp, color = iconTint, fontWeight = FontWeight.Bold)
             }
-            Spacer(modifier = Modifier.width(10.dp))
-            Column {
-                Text(value, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground, lineHeight = 16.sp)
-                Text(label, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, lineHeight = 12.sp)
-            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = MaterialTheme.colorScheme.onBackground)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(label, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
         }
     }
 }
 
 @Composable
 private fun PopularTopicItem(title: String, subject: String, duration: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+    BrutalCard(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        backgroundColor = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier.padding(14.dp),
@@ -622,13 +657,14 @@ private fun PopularTopicItem(title: String, subject: String, duration: String) {
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .border(BorderStroke(1.dp, Color.Black.copy(alpha = 0.06f)), RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     Icons.Filled.PlayArrow,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color(0xFF2563EB),
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -637,12 +673,12 @@ private fun PopularTopicItem(title: String, subject: String, duration: String) {
                 Text(
                     text = title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "$subject \u2022 $duration",
+                    text = "$subject • $duration",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -650,7 +686,8 @@ private fun PopularTopicItem(title: String, subject: String, duration: String) {
             Icon(
                 Icons.Filled.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = Color(0xFF94A3B8),
+                modifier = Modifier.size(18.dp)
             )
         }
     }
@@ -668,47 +705,59 @@ private fun BottomNavBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
-        Surface(
-            shape = RoundedCornerShape(50.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-            shadowElevation = 8.dp,
-            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
-        ) {
-            Row(
+        Box(modifier = Modifier.padding(end = 5.dp, bottom = 5.dp)) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .matchParentSize()
+                    .offset(x = 5.dp, y = 5.dp)
+                    .clip(RoundedCornerShape(50.dp))
+                    .background(Color.Black)
+            )
+            Surface(
+                shape = RoundedCornerShape(50.dp),
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(2.dp, Color.Black),
+                shadowElevation = 0.dp
             ) {
-                items.forEach { (icon, label, index) ->
-                    val isSelected = selectedIndex == index
-                    Surface(
-                        onClick = { onItemSelected(index) },
-                        shape = RoundedCornerShape(50.dp),
-                        color = if (isSelected) MaterialTheme.colorScheme.onBackground else Color.Transparent,
-                        modifier = Modifier.padding(horizontal = 2.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = if (isSelected) 16.dp else 12.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                icon,
-                                contentDescription = label,
-                                tint = if (isSelected) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            if (isSelected) {
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    label,
-                                    color = MaterialTheme.colorScheme.background,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items.forEach { (icon, label, index) ->
+                        val isSelected = selectedIndex == index
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(50.dp))
+                                .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                                .border(
+                                    if (isSelected) BorderStroke(1.5.dp, Color.Black) else BorderStroke(0.dp, Color.Transparent),
+                                    RoundedCornerShape(50.dp)
                                 )
+                                .clickable { onItemSelected(index) }
+                                .padding(horizontal = if (isSelected) 18.dp else 14.dp, vertical = 10.dp),
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    icon,
+                                    contentDescription = label,
+                                    tint = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                if (isSelected) {
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        label,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp
+                                    )
+                                }
                             }
                         }
                     }

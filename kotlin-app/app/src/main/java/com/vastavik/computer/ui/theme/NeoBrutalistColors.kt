@@ -6,7 +6,7 @@ object NeoBrutalistColors {
     // 6 accent color options
     val Yellow = Color(0xFFFFE500)   // Electric Yellow (default)
     val Pink = Color(0xFFFF2D78)     // Hot Pink
-    val Blue = Color(0xFF0066FF)     // Bright Blue
+    val Blue = Color(0xFF2563EB)     // Material Blue 600
     val Lime = Color(0xFF00FF66)     // Lime Green
     val Orange = Color(0xFFFF6600)   // Orange
     val Purple = Color(0xFF9933FF)   // Purple

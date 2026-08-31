@@ -142,17 +142,11 @@ fun VastavikTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = VastavikTypography,
-        shapes = if (neoBrutalish) Shapes(
-            extraSmall = RoundedCornerShape(0.dp),
-            small = RoundedCornerShape(0.dp),
-            medium = RoundedCornerShape(0.dp),
-            large = RoundedCornerShape(0.dp),
-            extraLarge = RoundedCornerShape(0.dp)
-        ) else Shapes(
-            extraSmall = RoundedCornerShape(4.dp),
-            small = RoundedCornerShape(8.dp),
-            medium = RoundedCornerShape(12.dp),
-            large = RoundedCornerShape(16.dp),
+        shapes = Shapes(
+            extraSmall = RoundedCornerShape(12.dp),
+            small = RoundedCornerShape(16.dp),
+            medium = RoundedCornerShape(16.dp),
+            large = RoundedCornerShape(20.dp),
             extraLarge = RoundedCornerShape(24.dp)
         ),
         content = content

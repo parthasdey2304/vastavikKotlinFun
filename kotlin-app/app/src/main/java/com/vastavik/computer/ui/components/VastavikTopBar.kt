@@ -1,10 +1,11 @@
 package com.vastavik.computer.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,58 +24,38 @@ fun VastavikTopBar(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.background,
-        shadowElevation = 2.dp
+        color = Color.White,
+        shadowElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = "Vastavik",
+                color = Color(0xFF2563EB),
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 20.sp
+            )
+            Text(
+                text = "Computer",
+                color = Color(0xFF0F172A),
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 20.sp
+            )
+            Spacer(modifier = Modifier.weight(1f))
             Box(
                 modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(0xFF4F46E5), Color(0xFF7C3AED))
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    "V",
-                    color = Color.White,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 16.sp
-                )
-            }
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    "Vastavik",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    lineHeight = 18.sp
-                )
-                Text(
-                    "Learn \u2022 Code \u2022 Build",
-                    fontSize = 10.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 12.sp
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
+                    .size(38.dp)
                     .clip(CircleShape)
                     .background(
                         Brush.linearGradient(
-                            colors = listOf(Color(0xFF4F46E5), Color(0xFF7C3AED))
+                            colors = listOf(Color(0xFF7C3AED), Color(0xFF06B6D4))
                         )
                     )
+                    .border(BorderStroke(1.5.dp, Color.Black), CircleShape)
                     .clickable { onProfileClick() },
                 contentAlignment = Alignment.Center
             ) {

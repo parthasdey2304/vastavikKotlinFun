@@ -271,4 +271,5 @@
     <string name="notification_title_quiz_reminder">Quiz Reminder</string>
     <string name="notification_title_streak">Keep Your Streak!</string>
     <string name="notification_title_premium">Premium Offer</string>
+    <string name="default_web_client_id">dummy-web-client-id</string>
 </resources>

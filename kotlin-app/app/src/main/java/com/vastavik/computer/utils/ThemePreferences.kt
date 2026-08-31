@@ -23,8 +23,8 @@ class ThemePreferences @Inject constructor(
     fun setDarkMode(isDark: Boolean) { sharedPreferences.edit().putBoolean(Constants.PREF_DARK_MODE, isDark).apply() }
 
     val isNeoBrutalish: Flow<Boolean> = callbackFlow {
-        trySend(sharedPreferences.getBoolean("neo_brutalish", false))
-        val l = SharedPreferences.OnSharedPreferenceChangeListener { prefs, k -> if (k=="neo_brutalish") trySend(prefs.getBoolean("neo_brutalish", false)) }
+        trySend(sharedPreferences.getBoolean("neo_brutalish", true))
+        val l = SharedPreferences.OnSharedPreferenceChangeListener { prefs, k -> if (k=="neo_brutalish") trySend(prefs.getBoolean("neo_brutalish", true)) }
         sharedPreferences.registerOnSharedPreferenceChangeListener(l)
         awaitClose { sharedPreferences.unregisterOnSharedPreferenceChangeListener(l) }
     }
@@ -32,8 +32,8 @@ class ThemePreferences @Inject constructor(
 
     // 0=Yellow, 1=Pink, 2=Blue, 3=Lime, 4=Orange, 5=Purple
     val neoBrutalAccentIndex: Flow<Int> = callbackFlow {
-        trySend(sharedPreferences.getInt("neo_brutal_accent", 0))
-        val l = SharedPreferences.OnSharedPreferenceChangeListener { prefs, k -> if (k=="neo_brutal_accent") trySend(prefs.getInt("neo_brutal_accent", 0)) }
+        trySend(sharedPreferences.getInt("neo_brutal_accent", 2))
+        val l = SharedPreferences.OnSharedPreferenceChangeListener { prefs, k -> if (k=="neo_brutal_accent") trySend(prefs.getInt("neo_brutal_accent", 2)) }
         sharedPreferences.registerOnSharedPreferenceChangeListener(l)
         awaitClose { sharedPreferences.unregisterOnSharedPreferenceChangeListener(l) }
     }

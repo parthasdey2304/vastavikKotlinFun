@@ -12,6 +12,7 @@ import com.vastavik.computer.ui.screens.auth.SignupScreen
 import com.vastavik.computer.ui.screens.auth.SecurityCheckScreen
 import com.vastavik.computer.ui.screens.auth.SplashScreen
 import com.vastavik.computer.ui.screens.chat.ChatScreen
+import com.vastavik.computer.ui.screens.home.ComingSoonScreen
 import com.vastavik.computer.ui.screens.home.HomeScreen
 import com.vastavik.computer.ui.screens.learning.LearningPathScreen
 import com.vastavik.computer.ui.screens.onboarding.AccountDeletedScreen
@@ -95,6 +96,18 @@ fun AppNavHost(
             HomeScreen(onNavigate = { route ->
                 navController.navigate(route)
             })
+        }
+        composable(
+            route = "coming_soon/{title}",
+            arguments = listOf(navArgument("title") { type = NavType.StringType })
+        ) { backStackEntry ->
+            ComingSoonScreen(
+                courseTitle = java.net.URLDecoder.decode(
+                    backStackEntry.arguments?.getString("title") ?: "",
+                    "UTF-8"
+                ),
+                onNavigate = { route -> navController.navigate(route) }
+            )
         }
         composable("learning_path") {
             LearningPathScreen(onNavigate = { route ->

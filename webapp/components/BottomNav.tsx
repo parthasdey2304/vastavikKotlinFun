@@ -12,7 +12,7 @@ const items = [
 export function DesktopNav() {
   const path = usePathname();
   return (
-    <nav className="hidden md:flex items-center gap-1 bg-white/60 backdrop-blur-xl border border-slate-200 rounded-full px-1.5 py-1 shadow-soft dark:bg-zinc-900/60 dark:border-zinc-700">
+    <nav className="hidden md:flex items-center gap-1 bg-white/60 backdrop-blur-xl border border-slate-200 rounded-full px-1.5 py-1 shadow-soft">
       {items.map(it => {
         const active = path === it.href;
         return (
@@ -21,8 +21,8 @@ export function DesktopNav() {
             href={it.href}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition whitespace-nowrap ${
               active
-                ? "bg-ink text-white shadow-soft dark:bg-white dark:text-ink"
-                : "text-muted hover:text-ink hover:bg-slate-50 dark:hover:bg-zinc-800"
+                ? "bg-ink text-white shadow-soft"
+                : "text-muted hover:text-ink hover:bg-slate-50"
             }`}
           >
             <span className="text-[11px]">{active ? it.activeIcon : it.icon}</span>
@@ -47,8 +47,8 @@ export function MobileNav() {
             href={it.href}
             className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-full text-sm font-semibold transition ${
               active
-                ? "bg-ink text-white shadow-soft dark:bg-white dark:text-ink"
-                : "text-muted hover:text-ink hover:bg-slate-50 dark:hover:bg-zinc-800"
+                ? "bg-ink text-white shadow-soft"
+                : "text-muted hover:text-ink hover:bg-slate-50"
             }`}
           >
             <span className="text-[11px]">{active ? it.activeIcon : it.icon}</span>
