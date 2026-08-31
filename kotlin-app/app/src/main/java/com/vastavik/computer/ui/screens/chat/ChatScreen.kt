@@ -1,6 +1,15 @@
 package com.vastavik.computer.ui.screens.chat
 
+import android.content.Intent
+import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,9 +29,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -31,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.SpanStyle
-import com.vastavik.computer.ui.theme.VastavikColors
 import com.vastavik.computer.ui.theme.neoShape
 import com.vastavik.computer.ui.theme.neoCircleShape
 import kotlinx.coroutines.Dispatchers
@@ -43,7 +54,6 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import android.net.Uri
-import com.vastavik.computer.ui.components.VastavikTopBar
 
 data class ChatMessage(val text: String, val isUser: Boolean)
 
@@ -109,6 +119,19 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
     var isLoading by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    // Voice input state
+    var isVoiceMode by remember { mutableStateOf(false) }
+    var isListening by remember { mutableStateOf(false) }
+    var partialTranscript by remember { mutableStateOf("") }
+    var speechRecognizer by remember { mutableStateOf<SpeechRecognizer?>(null) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            speechRecognizer?.destroy()
+        }
+    }
 
     suspend fun askMistral(prompt: String): String {
         return withContext(Dispatchers.IO) {
@@ -117,6 +140,98 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
             } catch (e: Exception) {
                 "Error: ${'$'}{e.message}. Check your internet connection."
             }
+        }
+    }
+
+    fun sendToAI(text: String) {
+        if (text.isNotBlank() && !isLoading) {
+            val userText = text.trim()
+            viewModel.addMessage(ChatMessage(userText, isUser = true))
+            inputText = ""
+            isLoading = true
+            coroutineScope.launch {
+                try {
+                    listState.animateScrollToItem(messages.lastIndex + 1)
+                    val resp = askMistral(userText)
+                    viewModel.addMessage(ChatMessage(resp, isUser = false))
+                    listState.animateScrollToItem(messages.lastIndex)
+                } finally { isLoading = false }
+            }
+        }
+    }
+
+    fun startListening() {
+        if (!SpeechRecognizer.isRecognitionAvailable(context)) {
+            isVoiceMode = false
+            return
+        }
+        speechRecognizer?.destroy()
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
+            setRecognitionListener(object : RecognitionListener {
+                override fun onReadyForSpeech(params: Bundle?) {
+                    isListening = true
+                }
+                override fun onBeginningOfSpeech() {}
+                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onBufferReceived(buffer: ByteArray?) {}
+                override fun onEndOfSpeech() {
+                    isListening = false
+                }
+                override fun onError(error: Int) {
+                    isListening = false
+                }
+                override fun onResults(results: Bundle?) {
+                    val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    val text = matches?.firstOrNull() ?: ""
+                    if (text.isNotEmpty()) {
+                        sendToAI(text)
+                    }
+                    isVoiceMode = false
+                    isListening = false
+                    partialTranscript = ""
+                }
+                override fun onPartialResults(partialResults: Bundle?) {
+                    val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                    val text = matches?.firstOrNull() ?: ""
+                    if (text.isNotEmpty()) partialTranscript = text
+                }
+                override fun onEvent(eventType: Int, params: Bundle?) {}
+            })
+        }
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-IN")
+            putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+        }
+        speechRecognizer?.startListening(intent)
+        isListening = true
+        partialTranscript = ""
+    }
+
+    fun stopListening() {
+        speechRecognizer?.stopListening()
+        isListening = false
+    }
+
+    // Permission launcher
+    val permLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            isVoiceMode = true
+            startListening()
+        }
+    }
+
+    // Launch voice mode
+    LaunchedEffect(isVoiceMode) {
+        if (isVoiceMode) {
+            permLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+        } else {
+            speechRecognizer?.cancel()
+            isListening = false
+            partialTranscript = ""
         }
     }
 
@@ -254,6 +369,24 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                 }
             }
 
+            // Voice Input Overlay
+            if (isVoiceMode) {
+                VoiceInputOverlay(
+                    isListening = isListening,
+                    partialTranscript = partialTranscript,
+                    amplitude = if (isListening) 0.5f + 0.5f * kotlin.math.sin(System.currentTimeMillis() / 100.0).toFloat() else 0f,
+                    onConfirm = {
+                        if (partialTranscript.isNotEmpty()) {
+                            sendToAI(partialTranscript)
+                        }
+                        isVoiceMode = false
+                    },
+                    onCancel = {
+                        isVoiceMode = false
+                    }
+                )
+            }
+
             // Input area brutal - fixed at bottom with imePadding
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -267,6 +400,26 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Microphone icon
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .border(BorderStroke(2.dp, Color.Black), CircleShape)
+                            .clickable {
+                                isVoiceMode = true
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            Icons.Filled.Mic,
+                            contentDescription = "Voice input",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
                     OutlinedTextField(
                         value = inputText,
                         onValueChange = { inputText = it },
@@ -370,6 +523,186 @@ private fun ChatBubbleRow(message: ChatMessage, onNavigate: (String) -> Unit) {
             ) {
                 Icon(Icons.Filled.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
             }
+        }
+    }
+}
+
+@Composable
+fun VoiceInputOverlay(
+    isListening: Boolean,
+    partialTranscript: String,
+    amplitude: Float,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    val primaryBlue = Color(0xFF2563EB)
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White,
+        shadowElevation = 0.dp,
+        border = BorderStroke(2.dp, Color.Black)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = if (isListening) "Listening..." else "Tap the mic to speak",
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 18.sp,
+                color = Color(0xFF0F172A)
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = "Say everything you need to get done.",
+                fontSize = 14.sp,
+                color = Color(0xFF64748B)
+            )
+            Spacer(Modifier.height(24.dp))
+
+            // Waveform visualizer
+            WaveformVisualizer(
+                isListening = isListening,
+                amplitude = amplitude,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            // Partial transcript
+            if (partialTranscript.isNotEmpty()) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = Color(0xFFF1F5F9),
+                    border = BorderStroke(1.dp, Color.Black)
+                ) {
+                    Text(
+                        text = partialTranscript,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                        fontSize = 14.sp,
+                        color = Color(0xFF334155),
+                        maxLines = 3
+                    )
+                }
+                Spacer(Modifier.height(20.dp))
+            }
+
+            // Action buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Pause / Cancel button
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFF1F5F9))
+                        .border(BorderStroke(2.dp, Color.Black), CircleShape)
+                        .clickable { onCancel() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "Cancel",
+                        tint = Color(0xFF64748B),
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
+                // Confirm button
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(primaryBlue)
+                        .border(BorderStroke(2.5.dp, Color.Black), CircleShape)
+                        .clickable {
+                            if (partialTranscript.isNotEmpty()) onConfirm()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Filled.Check,
+                        contentDescription = "Confirm",
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun WaveformVisualizer(
+    isListening: Boolean,
+    amplitude: Float,
+    modifier: Modifier = Modifier
+) {
+    val primaryBlue = Color(0xFF2563EB)
+    val barCount = 32
+
+    val infinite = rememberInfiniteTransition(label = "audio")
+
+    // A single phase that cycles 0..1, used to drive all bars
+    val phase by infinite.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "phase"
+    )
+
+    // A global "impulse" that bounces 0.15..1 while listening
+    val impulse by infinite.animateFloat(
+        initialValue = 0.15f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(if (isListening) 520 else 2000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "impulse"
+    )
+
+    Canvas(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFFF8FAFC))
+            .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(12.dp))
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+    ) {
+        val totalW = size.width
+        val barWidth = totalW / (barCount * 1.7f)
+        val gapW = (totalW - barWidth * barCount) / (barCount - 1).coerceAtLeast(1)
+        val maxH = size.height * 0.95f
+        val cY = size.height / 2f
+
+        for (i in 0 until barCount) {
+            // Deterministic pseudo-random per-bar envelope using sin
+            val envelope = (0.35f + 0.65f * kotlin.math.sin(i * 0.65f).toFloat().coerceIn(-1f, 1f)).coerceIn(0.2f, 1f)
+            // Traveling wave: bars shift amplitude as phase advances
+            val wave = (0.5f + 0.5f * kotlin.math.sin(i * 0.45f + phase * 2f * kotlin.math.PI.toFloat())).toFloat()
+            // Combine impulse (mic level) with extra phase variation
+            val base = if (isListening) impulse * (0.4f + 0.6f * wave) * envelope else 0.15f
+            val barH = maxH * base.coerceIn(0.06f, 1f)
+            val x = i * (barWidth + gapW)
+            val topY = cY - barH / 2f
+
+            drawRoundRect(
+                color = primaryBlue,
+                topLeft = Offset(x, topY),
+                size = Size(barWidth, barH),
+                cornerRadius = CornerRadius(barWidth / 2f)
+            )
         }
     }
 }
