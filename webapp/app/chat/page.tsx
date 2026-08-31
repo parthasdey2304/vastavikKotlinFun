@@ -128,21 +128,18 @@ function AIBubble({ text }: { text: string }) {
           ? (code.lang || "code")
           : (code.lang ? `${code.lang}` : "code");
         return (
-          <div key={idx} className="rounded-xl overflow-hidden my-2">
-            <div className="flex items-center gap-2 bg-[#252526] px-2 py-1">
-              <span className="text-[9px] text-gray-500 font-mono">{label}</span>
-              {code === firstCode && (
-                <a
-                  href={`/code-editor?initialCode=${encodeURIComponent(codeSegs.map(c => c.code).join("\n\n"))}&language=${encodeURIComponent(code.lang || "java")}`}
-                  className="ml-auto text-[9px] text-blue-400 hover:text-blue-300 font-semibold bg-blue-500/10 px-2 py-0.5 rounded"
-                >
-                  Open in Editor
-                </a>
-              )}
-            </div>
-            <pre className="bg-[#1E1E2E] p-3 overflow-x-auto text-[11px] leading-[18px] font-mono text-[#D4D4D4]">
+          <div key={idx} className="my-2">
+            <pre className="bg-[#1E1E2E] rounded-xl p-3 overflow-x-auto text-[11px] leading-[18px] font-mono text-[#D4D4D4]">
               <code dangerouslySetInnerHTML={{ __html: code.highlighted }} />
             </pre>
+            {code === firstCode && (
+              <a
+                href={`/code-editor?initialCode=${encodeURIComponent(codeSegs.map(c => c.code).join("\n\n"))}&language=${encodeURIComponent(code.lang || "java")}`}
+                className="mt-1.5 block w-full text-center text-[10px] text-white font-semibold bg-[#2563EB] hover:bg-[#1D4ED8] px-4 py-2 rounded-lg border border-black/10"
+              >
+                Open in Editor
+              </a>
+            )}
           </div>
         );
       })}

@@ -387,80 +387,82 @@ fun ChatScreen(onNavigate: (String) -> Unit) {
                 )
             }
 
-            // Input area brutal - fixed at bottom with imePadding
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = Color.White,
-                shadowElevation = 0.dp,
-                border = BorderStroke(2.dp, Color.Black)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp, vertical = 14.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+            // Input area - hidden when voice mode is active
+            if (!isVoiceMode) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color.White,
+                    shadowElevation = 0.dp,
+                    border = BorderStroke(2.dp, Color.Black)
                 ) {
-                    // Microphone icon
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .border(BorderStroke(2.dp, Color.Black), CircleShape)
-                            .clickable {
-                                isVoiceMode = true
-                            },
-                        contentAlignment = Alignment.Center
+                            .padding(horizontal = 12.dp, vertical = 14.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            Icons.Filled.Mic,
-                            contentDescription = "Voice input",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    OutlinedTextField(
-                        value = inputText,
-                        onValueChange = { inputText = it },
-                        placeholder = { Text("Ask anything (Java/Python/JS/SQL)...", fontSize = 14.sp, color = Color(0xFF94A3B8)) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .heightIn(min = 48.dp, max = 120.dp),
-                        shape = RoundedCornerShape(50.dp),
-                        singleLine = false,
-                        maxLines = 5,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Black,
-                            unfocusedBorderColor = Color.Black,
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White
-                        )
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    FilledIconButton(
-                        onClick = {
-                            if (inputText.isNotBlank() && !isLoading) {
-                                val userText = inputText.trim()
-                                viewModel.addMessage(ChatMessage(userText, isUser = true))
-                                inputText = ""
-                                isLoading = true
-                                coroutineScope.launch {
-                                    try {
-                                        listState.animateScrollToItem(messages.lastIndex + 1)
-                                        val resp = askMistral(userText)
-                                        viewModel.addMessage(ChatMessage(resp, isUser = false))
-                                        listState.animateScrollToItem(messages.lastIndex)
-                                    } finally { isLoading = false }
+                        OutlinedTextField(
+                            value = inputText,
+                            onValueChange = { inputText = it },
+                            placeholder = { Text("Ask anything...", fontSize = 14.sp, color = Color(0xFF94A3B8)) },
+                            trailingIcon = {
+                                if (inputText.isEmpty()) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .clip(CircleShape)
+                                            .background(MaterialTheme.colorScheme.primary)
+                                            .border(BorderStroke(1.5.dp, Color.Black), CircleShape)
+                                            .clickable { isVoiceMode = true },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            Icons.Filled.Mic,
+                                            contentDescription = "Voice input",
+                                            tint = Color.White,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
                                 }
-                            }
-                        },
-                        enabled = inputText.isNotBlank() && !isLoading,
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .heightIn(min = 42.dp, max = 130.dp),
+                            shape = RoundedCornerShape(50.dp),
+                            singleLine = false,
+                            maxLines = 4,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Black,
+                                unfocusedBorderColor = Color.Black,
+                                focusedContainerColor = Color.White,
+                                unfocusedContainerColor = Color.White
+                            )
                         )
-                    ) {
-                        Icon(Icons.Filled.Send, contentDescription = "Send", tint = Color.White)
+                        Spacer(Modifier.width(8.dp))
+                        FilledIconButton(
+                            onClick = {
+                                if (inputText.isNotBlank() && !isLoading) {
+                                    val userText = inputText.trim()
+                                    viewModel.addMessage(ChatMessage(userText, isUser = true))
+                                    inputText = ""
+                                    isLoading = true
+                                    coroutineScope.launch {
+                                        try {
+                                            listState.animateScrollToItem(messages.lastIndex + 1)
+                                            val resp = askMistral(userText)
+                                            viewModel.addMessage(ChatMessage(resp, isUser = false))
+                                            listState.animateScrollToItem(messages.lastIndex)
+                                        } finally { isLoading = false }
+                                    }
+                                }
+                            },
+                            enabled = inputText.isNotBlank() && !isLoading,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(Icons.Filled.Send, contentDescription = "Send", tint = Color.White)
+                        }
                     }
                 }
             }
@@ -730,24 +732,35 @@ fun ParsedMarkdownText(text: String, modifier: Modifier = Modifier, onNavigate: 
                 val isFirstCode = codeBlocks.isNotEmpty() && codeContent == codeBlocks.first().second
                 if (onNavigate != null && codeContent.isNotBlank() && isFirstCode) {
                     val allCode = codeBlocks.joinToString("\n\n") { it.second }
-                    val label = if (codeBlocks.size == 1) (language.ifEmpty { "code" }) else "${codeBlocks.size} code snippets"
+                    val ext = when (language.lowercase()) {
+                        "python", "py" -> "py"
+                        "javascript", "js" -> "js"
+                        "sql" -> "sql"
+                        else -> "java"
+                    }
+                    val filename = "code.$ext"
                     Surface(
                         onClick = {
                             val encoded = Uri.encode(allCode, "UTF-8")
                             onNavigate("code_editor?initialCode=$encoded&language=$language")
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(10.dp),
                         color = MaterialTheme.colorScheme.primary,
+                        border = BorderStroke(1.5.dp, Color.Black),
                         modifier = Modifier
-                            .padding(vertical = 4.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp, vertical = 4.dp)
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Filled.OpenInFull, contentDescription = null, tint = Color.White, modifier = Modifier.size(12.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text(label, color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                            Icon(Icons.Filled.OpenInFull, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Column {
+                                Text("View in Editor", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                Text(filename, color = Color.White.copy(alpha = 0.7f), fontSize = 10.sp)
+                            }
                         }
                     }
                 } else if (codeContent.isNotBlank()) {
