@@ -28,6 +28,9 @@ import com.vastavik.computer.ui.screens.onboarding.UserSetupScreen
 import com.vastavik.computer.ui.screens.onboarding.WelcomeScreen
 import com.vastavik.computer.ui.screens.editor.CodeEditorScreen
 import com.vastavik.computer.ui.screens.editor.OcrExerciseScreen
+import com.vastavik.computer.ui.screens.meeting.InClassScreen
+import com.vastavik.computer.ui.screens.meeting.LobbyScreen
+import com.vastavik.computer.ui.screens.meeting.MeetingViewModel
 import com.vastavik.computer.ui.screens.notifications.NotificationsScreen
 import com.vastavik.computer.ui.screens.notifications.AppUpdateScreen
 import com.vastavik.computer.ui.screens.practice.PracticeScreen
@@ -221,6 +224,19 @@ fun AppNavHost(
         }
         composable("course") {
             LearningPathScreen(onNavigate = { route -> navController.navigate(route) })
+        }
+        composable(route = "meeting_lobby/{classId}", arguments = listOf(navArgument("classId") { type = NavType.StringType })) { backStackEntry ->
+            val classId = backStackEntry.arguments?.getString("classId") ?: ""
+            val vm = androidx.lifecycle.viewmodel.compose.viewModel<MeetingViewModel>()
+            val session = com.vastavik.computer.data.model.ClassSession(classId = classId, topic = "Live Class: $classId", adminId = "admin_$classId")
+            val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "user_${System.currentTimeMillis()}"
+            val name = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.displayName ?: "Student"
+            LobbyScreen(onNavigate = { r -> navController.navigate(r) }, classInfo = session, viewModel = vm, userId = uid, displayName = name)
+        }
+        composable(route = "meeting_inclass/{classId}", arguments = listOf(navArgument("classId") { type = NavType.StringType })) { backStackEntry ->
+            val vm = androidx.lifecycle.viewmodel.compose.viewModel<MeetingViewModel>()
+            val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "user_${System.currentTimeMillis()}"
+            InClassScreen(onNavigate = { r -> navController.navigate(r) }, viewModel = vm, userId = uid)
         }
     }
 }

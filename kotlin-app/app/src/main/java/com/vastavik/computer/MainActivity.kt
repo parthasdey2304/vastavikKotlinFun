@@ -73,6 +73,9 @@ class MainActivity : ComponentActivity() {
             "profile" -> "profile"
             "pyq" -> "pyq"
             "practice" -> "practice"
+            "meeting_lobby" -> if (!screenId.isNullOrEmpty()) "meeting_lobby/$screenId" else if (!intent?.getStringExtra("class_id").isNullOrEmpty()) "meeting_lobby/${intent.getStringExtra("class_id")}" else "home"
+            "meeting_inclass" -> if (!screenId.isNullOrEmpty()) "meeting_inclass/$screenId" else if (!intent?.getStringExtra("class_id").isNullOrEmpty()) "meeting_inclass/${intent.getStringExtra("class_id")}" else "home"
+            "class_started" -> if (!intent?.getStringExtra("class_id").isNullOrEmpty()) "meeting_lobby/${intent.getStringExtra("class_id")}" else "home"
             else -> "splash"
         }
     }

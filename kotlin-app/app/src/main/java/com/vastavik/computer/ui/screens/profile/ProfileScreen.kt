@@ -273,6 +273,7 @@ fun ProfileScreen(onNavigate: (String) -> Unit) {
                         val menuItems = listOf(
                             Quadruple("Edit Profile", "Manage info & avatar", Icons.Filled.Edit, "edit_profile"),
                             Quadruple("Select Course", "Choose your path", Icons.Filled.MenuBook, "course"),
+                            Quadruple("Online Class", "Join live session", Icons.Filled.VideoCall, "meeting_lobby/default_live_class"),
                             Quadruple("Code Editor", "Practice live", Icons.Filled.Code, "code_editor"),
                             Quadruple("OCR Exercise", "Scan & solve", Icons.Filled.DocumentScanner, "ocr_exercise"),
                             Quadruple("My Notes", "Your saved notes", Icons.Filled.Note, "my_notes"),

@@ -105,4 +105,39 @@ All `.agent/` docs are mirrored from `vastavikComputers/.agent`.
 
 ---
 
+## 🎥 Live Online Class Module (Big Pickle)
+
+> Contract: `docs/realtime-events.md`. Kotlin (`kotlin-app/`) + Web (`webapp/`) share the same roles/event names and plug into the same backend.
+
+**Roles.** Admin (fixed, full control). StarCast (chosen by Admin, one at a time, inherits Admin's in-meeting controls *except* cannot kick/override Admin; labeled `★ starCast` in roster + chat; can kick students). Student (default).
+
+**Join flow.** When a class goes live, students get a system + in-app banner (`topic` + Join). Tap → **Lobby** (`meeting_lobby/{classId}`) → **In-Class** (`meeting_inclass/{classId}`), mic & camera OFF by default. Banner + both screens use NeoBrutalist style (thick bottom/right borders, rounded 16dp) and are animated. App backgrounded while in call keeps the connection alive via `MeetingForegroundService` + ongoing notification (audio preserved until explicit leave).
+
+**In-class room (Google-Meet-style).** Whiteboard is the default view (ported from `explaino_structura`, Canvas on Android, Excalidraw-inspired on web, restyled to NeoBrutalist). Controls: mic, video, screenshare, cut, captions toggle, chat, raise hand, emoji, record. Admin can disable any feature on the fly — disabled controls are hidden/greyed, not just non-functional. Control bar shows only **Mic · Video · Screenshare · Cut**; **Screenshare is hidden unless** `isAdmin || hasScreenSharePermission`; when hidden the remaining 3 expand evenly (no gap).
+
+**Screenshare restriction — exactly 2 max:** Admin (always eligible) + one student explicitly granted by Admin. Revoke immediately hides the control on that student's device; server rejects a second grant. Recording captures Admin's feed + that single granted student's share when active.
+
+**Recording.** Only Admin/StarCast can start/stop; all participants show a `REC` indicator while active. Client signals `recording-start`/`recording-stop`; storage/upload is server's job (handoff contract in `docs/realtime-events.md`).
+
+**Chat with reply (WhatsApp-style).** Text + reply-to-message: each message has Reply, composer shows a preview bubble above input, sent reply shows a quoted preview (sender name + truncated text) at the top of its bubble. StarCast messages are labeled.
+
+**Participants & audit.** Side panel (extends the existing “all users” pattern) shows live roster, join/leave with timestamps, per-student mic/cam/hand/share/StarCast tags, plus an events feed the backend persists (`AuditLogEntry`: join/leave, mic/cam, hand, screenshare grant/revoke, kicks, StarCast assign/revoke, recording, feature toggles — see `docs/realtime-events.md`).
+
+**Web parity & Stitch.** `webapp/` mirrors the same feature set with a dedicated responsive desktop layout (two-column: whiteboard + side panels 360px, not a stretched phone view). Shared event names/roles with Kotlin. Stitch MCP is scaffolded in `webapp/stitch/DESIGN.md` + `SCREENS.md` (prompts for Banner/Lobby/InClass/Chat/Participants/Whiteboard) — generate once Stitch auth is available; until then the hand-built web pages are the source of truth.
+
+**Try it (mock).** No backend required for UI: open `webapp` (`npm run dev -- --port 3002`) → `/meeting/lobby/demo` → Join → `/meeting/inclass/demo` (mock participants + whiteboard). Kotlin: run on emulator → navigate `meeting_lobby/{id}` (uses `LocalMeetingClient`; swap to `WebSocketMeetingClient` by injecting real `MeetingClient` in `MeetingViewModel`).
+
+---
+
+## ❓ Open Questions for Backend Owner (do not guess — confirm)
+
+1. Exact emoji reaction set/style.
+2. Captions: live speech-to-text provider vs placeholder toggle.
+3. Retention policy for recordings + audit logs (who can view, how long).
+4. Whether chat bodies are part of the persisted audit log or only presence/control events.
+5. Backend transport: WebSocket vs WebRTC SFU provider (LiveKit/Agora) — client `MeetingClient` abstraction is swappable so both sides can plug in with minimal rework.
+6. Web framework preference beyond “generate via Stitch MCP” (current web is Next.js 15 / React 19 / Tailwind; Stitch spec included in `webapp/stitch/`).
+
+---
+
 **Built with ❤️ for vastavikComputers — Class 5–12 coding education.**

@@ -27,7 +27,16 @@ class FirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
         Log.d(TAG, "Message received from: ${remoteMessage.from}")
-
+        // Handle live class started event (drives notification banner + lobby flow)
+        val event = remoteMessage.data["event"] ?: remoteMessage.data["type"]
+        if (event == "class-started" || event == "class_started") {
+            val classId = remoteMessage.data["classId"] ?: remoteMessage.data["class_id"] ?: ""
+            val topic = remoteMessage.data["topic"] ?: remoteMessage.data["title"] ?: "Live Class"
+            if (classId.isNotEmpty()) {
+                MeetingNotificationManager(this).showClassLiveNotification(classId, topic)
+                return
+            }
+        }
         val title = remoteMessage.notification?.title
             ?: remoteMessage.data["title"]
             ?: "Vastavik Computers"

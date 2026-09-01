@@ -44,3 +44,10 @@ webapp/.env
 webapp/.env.local
 webapp/node_modules/
 webapp/.next/
+
+# Local tool artifacts (freebuff, graphify, build logs, tsbuildinfo)
+.freebuff/
+graphify-out/
+build_errors.txt
+build_out.txt
+*.tsbuildinfo

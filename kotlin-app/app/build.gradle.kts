@@ -157,6 +157,16 @@ dependencies {
     // Lottie
     implementation("com.airbnb.android:lottie-compose:6.6.2")
 
+    // ML Kit Text Recognition
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+
+    // CameraX for in-app camera capture
+    val cameraXVersion = "1.4.1"
+    implementation("androidx.camera:camera-core:$cameraXVersion")
+    implementation("androidx.camera:camera-camera2:$cameraXVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraXVersion")
+    implementation("androidx.camera:camera-view:$cameraXVersion")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
